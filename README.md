@@ -7,6 +7,14 @@ qemuのテスト
 
 # その他まとめ
 
+- [isoでの起動について書いてある](https://qiita.com/momoto/items/b7e2a2b28f91c4cb5cec)
+
+- [kernelのビルドから行っている](https://zenn.dev/kaishuu0123/articles/bfdeedc0492483281a4c)
+
+- [qemu-imgオプションについて丁寧に書いてある](https://manual.geeko.jp/ja/cha.qemu.guest_inst.html)
+
+- [qemu-system-*のオプションについて丁寧に書いてある](https://www15.big.or.jp/~yamamori/sun/qemu/usage.html)
+
 - ddコマンドについて
     - [リンク](http://earth.sci.ehime-u.ac.jp/~kameyama/linuxtips.html)
     - ddはディスクイメージを作成できる
