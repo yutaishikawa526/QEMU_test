@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # ディスクをqcow2形式に変換
 
