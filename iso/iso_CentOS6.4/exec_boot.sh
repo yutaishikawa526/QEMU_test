@@ -1,9 +1,11 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # 初回以降
 
-_QCOW2_PATH=`pwd`/disk_iso/CentOS.qcow2
+_EXCE_DIR=$(cd $(dirname $0) ; pwd)
 
-../common.sh
+_QCOW2_PATH="$_EXCE_DIR"/disk_iso/CentOS.qcow2
+
+source "$_EXCE_DIR"/../common.sh
 
 exec_boot "$_QCOW2_PATH"
