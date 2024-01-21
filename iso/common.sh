@@ -18,7 +18,8 @@ function initial_install(){
     sudo qemu-system-x86_64 "$_QCOW2_PATH" \
         -m 1024 -boot order=d \
         -cdrom "$_ISO_PATH" \
-        #-cpu host -enable-kvm \
+        -cpu host -enable-kvm
+
 }
 
 # 初回以降の起動時
@@ -27,6 +28,6 @@ function exec_boot(){
     _QCOW2_PATH=$1
 
     sudo qemu-system-x86_64 "$_QCOW2_PATH" \
-        -m 1024 \
-        #-enable-kvm -cpu host
+        -m 1024 -enable-kvm -cpu host
+
 }
