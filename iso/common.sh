@@ -11,9 +11,12 @@ function initial_install(){
     # isoファイルのダウンロードURL
     _ISO_URL=$3
 
-    curl "$_ISO_URL" -o "$_ISO_PATH"
+    if [ ! -e "$_ISO_PATH" ]; then
+        # isoファイル未ダウンロードの場合のみ作成
+        curl "$_ISO_URL" -o "$_ISO_PATH"
+    fi
 
-    sudo qemu-img create -f qcow2 "$_QCOW2_PATH" 32G
+    sudo qemu-img create -f qcow2 "$_QCOW2_PATH" 16G
 
     sudo qemu-system-x86_64 "$_QCOW2_PATH" \
         -m 1024 -boot order=d \

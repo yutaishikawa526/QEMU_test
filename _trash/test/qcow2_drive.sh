@@ -2,15 +2,39 @@
 
 # qcow2のディスクを`-drive`で指定する方法
 
-_EXCE_DIR=$(cd $(dirname $0) ; pwd)
-_UBUNTU_ISO_DIR=`(cd "$_EXCE_DIR/../../iso/iso_Ubuntu20";pwd)`
-_TMP_IMG_PATH="$_UBUNTU_ISO_DIR/disk_iso/tmp.img"
+sudo apt install -y kpartx
 
-# isoでのubuntuの起動可能ディスクを作成
+_EXCE_DIR=$(cd $(dirname $0) ; pwd)
+_CENTOS_ISO_DIR=`(cd "$_EXCE_DIR/../../iso/iso_CentOS6.4";pwd)`
+_TMP_IMG_PATH="$_EXCE_DIR/disk/tmp.img"
+
+function remove_loopback(){
+    tmp_img=$1
+
+    losetup | grep "$tmp_img" \
+    | sed -r 's/^.*(\/dev\/loop[0-9]+).*$/\1/' \
+    | xargs -I loop_num sudo kpartx -d "loop_num"
+    losetup | grep "$tmp_img" \
+    | sed -r 's/^.*(\/dev\/loop[0-9]+).*$/\1/' \
+    | xargs -I loop_num sudo losetup -d "loop_num"
+}
+
+function create_loopback(){
+    tmp_img=$1
+
+    remove_loopback "$tmp_img"
+
+    sudo kpartx -a "$tmp_img"
+    loopback=`losetup | grep "$tmp_img" | sed -r 's#/dev/(loop[0-9]+) *.*#\1#g' | head -n 1`
+
+    echo "$loopback"
+}
+
+# isoでのCentOSの起動可能ディスクを作成
 if [[ "$1" == 'initialize=yes' ]]; then
     echo 'start init'
 
-    bash "$_UBUNTU_ISO_DIR/initial_install.sh"
+    bash "$_CENTOS_ISO_DIR/initial_install.sh"
 
     exit
 fi
@@ -19,40 +43,45 @@ fi
 if [[ "$1" == 'create=yes' ]]; then
     echo 'start create'
 
-    dd if=/dev/zero of=tmp.img bs=1G count=2
+    dd if=/dev/zero of="$_TMP_IMG_PATH" bs=1G count=2
 
-    sudo gdisk "$_TMP_IMG_PATH" << (`echo 'n';echo '';echo '';echo '+1G';echo '';echo 'n';echo '';echo '';echo '';echo '';`)
+    sudo gdisk "$_TMP_IMG_PATH" << END
+    `echo '';echo '';echo 'n';echo '';echo '';echo '+1G';echo '';echo 'n';echo '';echo '';echo '';echo '';echo 'w';echo 'y';`
+END
 
-    partprobe
+    sudo partprobe
 
-    sudo kpartx -a "$_TMP_IMG_PATH"
-fi
-
-# ループバックディスクを取得
-_LOOP_BACK_DISK=`losetup | grep "$_TMP_IMG_PATH" | sed -r 's#/dev/(loop[0-9]+) *.*#\1#g' | head -n 1`
-if [[ "$_LOOP_BACK_DISK" == '' ]]; then
-    echo 'ループバックに設定されていません。'
-    exit 1
+    exit
 fi
 
 # 追加のディスクをフォーマット
 if [[ "$1" == 'format=yes' ]]; then
     echo 'start format'
 
-    sudo mkfs.ext4 "/dev/mapper/$_LOOP_BACK_DISK"p1
-    sudo mkfs.ext4 "/dev/mapper/$_LOOP_BACK_DISK"p2
+    loopback=`create_loopback "$_TMP_IMG_PATH"`
 
+    sudo mkfs.ext4 "/dev/mapper/$loopback"p1
+    sudo mkfs.ext4 "/dev/mapper/$loopback"p2
+
+    remove_loopback "$_TMP_IMG_PATH"
+
+    exit
 fi
 
 # 追加のディスクをqcow2へ
 if [[ "$1" == 'convert=yes' ]]; then
     echo 'start convert'
 
-    sudo qemu-img convert -f raw -O qcow2 "/dev/mapper/$_LOOP_BACK_DISK"p1 "$_TMP_IMG_PATH"_qcow2_1
-    sudo qemu-img convert -f raw -O qcow2 "/dev/mapper/$_LOOP_BACK_DISK"p2 "$_TMP_IMG_PATH"_qcow2_2
+    loopback=`create_loopback "$_TMP_IMG_PATH"`
 
-    sudo qemu-img convert -f raw -O qcow2 "/dev/$_LOOP_BACK_DISK" "$_TMP_IMG_PATH"_qcow2_x
+    sudo qemu-img convert -f raw -O qcow2 "/dev/mapper/$loopback"p1 "$_TMP_IMG_PATH"_qcow2_1
+    sudo qemu-img convert -f raw -O qcow2 "/dev/mapper/$loopback"p2 "$_TMP_IMG_PATH"_qcow2_2
 
+    sudo qemu-img convert -f raw -O qcow2 "/dev/$loopback" "$_TMP_IMG_PATH"_qcow2_x
+
+    remove_loopback "$_TMP_IMG_PATH"
+
+    exit
 fi
 
 # 実行
@@ -61,10 +90,11 @@ if [[ "$1" == 'exe=yes' ]]; then
 
     sudo qemu-system-x86_64 \
         -m 1024 -enable-kvm -cpu host \
-        "$_UBUNTU_ISO_DIR/disk_iso/ubuntuOS.qcow2" \
+        "$_CENTOS_ISO_DIR/disk_iso/CentOS.qcow2" \
         -drive format=qcow2,media=disk,file="$_TMP_IMG_PATH"_qcow2_1
         -drive format=qcow2,media=disk,file="$_TMP_IMG_PATH"_qcow2_2
 
+    exit
 fi
 
 # 実行その2
@@ -75,7 +105,8 @@ if [[ "$1" == 'exe2=yes' ]]; then
     # また中への書き込みが保持されていることを確認
     sudo qemu-system-x86_64 \
         -m 1024 -enable-kvm -cpu host \
-        "$_UBUNTU_ISO_DIR/disk_iso/ubuntuOS.qcow2" \
-        -drive format=qcow2,media=disk,file="$_TMP_IMG_PATH"_qcow2_3
+        "$_CENTOS_ISO_DIR/disk_iso/CentOS.qcow2" \
+        -drive format=qcow2,media=disk,file="$_TMP_IMG_PATH"_qcow2_x
 
+    exit
 fi
