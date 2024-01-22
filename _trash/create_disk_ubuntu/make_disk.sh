@@ -13,7 +13,9 @@ sudo partprobe
 sudo kpartx "$RAW_DISK_PATH" -a
 
 echo 'パーティションの候補'
-sudo fdisk -l | grep "$RAW_DISK_PATH"
+losetup | grep "$RAW_DISK_PATH" \
+| sed -r 's#^.*(/dev/loop[0-9]+).*$#\1#g' \
+| xargs -I loop_num sudo fdisk -l "loop_num"
 
 echo "efiパーティションを選択してください。"
 read -p ":" _EFI_DISK

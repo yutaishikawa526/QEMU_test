@@ -6,7 +6,7 @@
 _DISK=/dev/loop1
 _EFI_PART=/dev/mapper/loop1p1
 _ROOT_PART=/dev/mapper/loop1p2
-_LINUX_KERNEL_VER=5.15.0-91
+_LINUX_KERNEL_VER=5.15.0-25
 _LOCALHOST=localhost
 _USER=user
 _NETWORK_INTERFACE=eth0
