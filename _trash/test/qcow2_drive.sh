@@ -78,7 +78,7 @@ if [[ "$1" == 'exe=yes' ]]; then
     sudo qemu-system-x86_64 \
         -m 1024 -enable-kvm -cpu host \
         "$_BOOT_QCOW2_PATH" \
-        -drive format=qcow2,media=disk,file="$_TMP_IMG_PATH"_qcow2_1
+        -drive format=qcow2,media=disk,file="$_TMP_IMG_PATH"_qcow2_1 \
         -drive format=qcow2,media=disk,file="$_TMP_IMG_PATH"_qcow2_2
 
     exit
