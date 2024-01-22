@@ -8,6 +8,9 @@ diskイメージを作成してその上にubuntuをインストール後に起�
 - [UbuntuSettings用の設定ファイルのサンプル](./conf/conf_UbuntuSettings-sample.sh)を適切に記載する。
     - この内容はそのままUbuntuSettingsの設定ファイルとして使用する
     - ファイル名は`conf_UbuntuSettings.sh`で保存する
+- [qcow2ディスク用の設定ファイルのサンプル](./conf/conf_qcow2-sample.sh)を適切に記載する。
+    - 作成するディスクイメージの設定ファイルとして使用する
+    - ファイル名は`conf_qcow2.sh`で保存する
 
 # 手順
 - `0_initialize.sh`で初期化を行う

@@ -6,10 +6,18 @@ _DIR=$(cd $(dirname $0) ; pwd)
 _CLONE_DIR="$_DIR/clone/UbuntuSettings"
 _CREATE_DIR="$_CLONE_DIR/sh/install_ubuntu"
 
+source "$_DIR/conf/conf_qcow2.sh"
+
+sudo qemu-system-x86_64
+    -boot menu=on -m 4096 -enable-kvm -cpu host \
+    -drive format=qcow2,media=disk,file="$_QCOW2_PATH" \
+
+
+
 # efiとrootのディスクイメージを読み込むために以下を実行
-_DIR="$_CREATE_DIR"
-source "$_DIR/conf/conf.sh"
-_DIR=$(cd $(dirname $0) ; pwd)
+#_DIR="$_CREATE_DIR"
+#source "$_DIR/conf/conf.sh"
+#_DIR=$(cd $(dirname $0) ; pwd)
 
 #sudo qemu-system-x86_64 \
 #    -boot menu=on -m 1024 \

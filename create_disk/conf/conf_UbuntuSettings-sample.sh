@@ -2,20 +2,16 @@
 
 # 設定ファイル
 
-# _DISK_DIR,_EFI_FNAME,_ROOT_FNAMEについては、
-# 1a_create_disk.shで作成されたイメージディスクのみが対象
-# 1b_setup_partitionを使用する場合は使わない
-# 変更する必要はない
+# 使用しないため変更の必要はない
 _DISK_DIR="$_DIR"/disk
 _EFI_FNAME='efi.img'
 _ROOT_FNAME='root.img'
 
-# 1b_setup_partitionを使用する場合は
-# 「/dev/sdb1」「/dev/sdb2」といったになる
+# 自動で書き換えるため、変更の必要はない
 # efiディスクのパス
-_DISK_EFI="$_DISK_DIR/$_EFI_FNAME"
+_DISK_EFI=
 # rootディスクのパス
-_DISK_ROOT="$_DISK_DIR/$_ROOT_FNAME"
+_DISK_ROOT=
 
 # ディスクのマウントポイント
 # すでにマウントポイントになっている場所は注意
@@ -48,6 +44,5 @@ _GRUB_TARGET=x86_64-efi
 # [grub-efi-*]パッケージの名前
 _GRUB_EFI_PACKAGE=grub-efi-amd64
 
-# [1a_create_disk.sh]でのみ使用する
-# rootディレクトリのサイズ(GB)
+# 使用しないため変更の必要はない
 _ROOT_DSIZE=12

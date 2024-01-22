@@ -7,7 +7,7 @@ _CLONE_DIR="$_DIR/clone/UbuntuSettings"
 _CREATE_DIR="$_CLONE_DIR/sh/install_ubuntu"
 
 sudo apt update
-sudo apt install -y git qemu-kvm
+sudo apt install -y git qemu-kvm qemu-utils
 
 # 必要ならば
 # sudo apt install -y libvirt-daemon bridge-utils virt-manager
