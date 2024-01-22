@@ -3,6 +3,9 @@
 # qcow2のディスクをmountして操作する
 # 対象のディスクを複数パーティションを設定して行う
 
+# これらは全て正常に動作した
+# ポイントは[sudo qemu-nbd -c]の後で[gdisk]でパーティション作成し、その後でフォーマットするという順番が大切
+
 sudo apt install -y qemu-utils
 sudo modprobe nbd
 
@@ -49,8 +52,8 @@ sudo mount "$_NBD_DISK"p2 "$_MOUNT_2"
 sudo touch "$_MOUNT_1"/test.txt
 sudo touch "$_MOUNT_2"/test.txt
 
-echo 'test1' | sudo sh -c "cat > '$_MOUNT_1/test.txt'"
-echo 'test2' | sudo sh -c "cat > '$_MOUNT_2/test.txt'"
+echo 'test1_multi_mount' | sudo sh -c "cat > '$_MOUNT_1/test.txt'"
+echo 'test2_multi_mount' | sudo sh -c "cat > '$_MOUNT_2/test.txt'"
 
 cqcow2_clear "$_MOUNT_1" "$_MOUNT_2" "$_NBD_DISK"
 
