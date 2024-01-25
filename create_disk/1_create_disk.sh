@@ -23,8 +23,29 @@ bash "$_CREATE_DIR/4_user_setting.sh"
 # grubインストール
 bash "$_CREATE_DIR/5_grub_install.sh"
 
-# バックアップ
-bash "$_CREATE_DIR/91a_create_backup.sh"
+# ----------------------------------------------
+# 中身の修正
+#_Q_DIR=$_DIR
+#_DIR=$_CREATE_DIR
+#source "$_DIR/conf/conf.sh"
+#source "$_DIR/conf/conf_mnt.sh"
+# "$_DIR/com/com.sh"
+
+# マウント
+#bash "$_DIR/com/mount.sh"
+#bash "$_DIR/com/sys_setup.sh"
+
+# grub.cfgの修正
+#uuid=`get_uuid_by_device $_PAT_ROOT`
+#sudo sed -i 's#'$_PAT_ROOT'#'$uuid'#g' "$_MNT_POINT/boot/grub/grub.cfg"
+
+# 初期化シェルのコピー
+#sudo cp "$_Q_DIR/100_guest_init.sh" "$_MNT_POINT/root/initialize.sh"
+
+# unmount
+#bash "$_DIR/com/unset.sh"
+#_DIR=$_Q_DIR
+# ----------------------------------------------
 
 # ディスク切断
 bash "$_CREATE_DIR/72a_disconnect_disk.sh"

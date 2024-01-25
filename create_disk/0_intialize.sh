@@ -13,6 +13,7 @@ sudo apt install -y git qemu-kvm qemu-utils
 # sudo apt install -y libvirt-daemon bridge-utils virt-manager
 
 # 必要なリポジトリのダウンロード
+sudo rm -R "$_CLONE_DIR" || true
 git clone https://github.com/yutaishikawa526/UbuntuSettings "$_CLONE_DIR"
 sudo rm -R "$_CLONE_DIR/.git"
 
@@ -22,13 +23,13 @@ sudo mkdir -p "$_DIR/disk/mnt"
 {
     echo '#!/bin/bash -e'
     echo '_DISK_BASE='
-    echo "_MNT_POINT=$_DIR/disk/mnt"
-    echo "_DISK_IMG_PATH=$_DIR/disk/img.raw"
+    echo "_MNT_POINT='$_DIR/disk/mnt'"
+    echo "_DISK_IMG_PATH='$_DIR/disk/img.raw'"
     echo '_DEB_NAME=jammy'
-    echo '_DEB_OPTION='--arch amd64 --variant minbase''
-    echo '_KERNEL_VER='5.15.0-25''
+    echo "_DEB_OPTION='--arch amd64 --variant minbase'"
+    echo "_KERNEL_VER='5.15.0-25'"
     echo '_KERNEL_OTHER_INSTALL='
-    echo '_GRUB_TARGET=i386-pc'
+    echo "_GRUB_TARGET='i386-pc'"
     echo '_GRUB_EFI_PACKAGE="grub-pc grub-pc-bin"'
 } | sudo sh -c "cat > $_CREATE_DIR/conf/conf.sh"
 
