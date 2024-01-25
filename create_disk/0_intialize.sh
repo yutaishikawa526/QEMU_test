@@ -16,13 +16,34 @@ sudo apt install -y git qemu-kvm qemu-utils
 git clone https://github.com/yutaishikawa526/UbuntuSettings "$_CLONE_DIR"
 sudo rm -R "$_CLONE_DIR/.git"
 
+sudo mkdir -p "$_DIR/disk/mnt"
+
 # 設定ファイルの設置
-ubuntu_conf_path="$_DIR/conf/conf_UbuntuSettings.sh"
-if [ ! -e "$ubuntu_conf_path" ]; then
+{
+    echo '#!/bin/bash -e'
+    echo '_DISK_BASE='
+    echo "_MNT_POINT=$_DIR/disk/mnt"
+    echo "_DISK_IMG_PATH=$_DIR/disk/img.raw"
+    echo '_DEB_NAME=jammy'
+    echo '_DEB_OPTION='--arch amd64 --variant minbase''
+    echo '_KERNEL_VER='5.15.0-25''
+    echo '_KERNEL_OTHER_INSTALL='
+    echo '_GRUB_TARGET=i386-pc'
+    echo '_GRUB_EFI_PACKAGE="grub-pc grub-pc-bin"'
+} | sudo sh -c "cat > $_CREATE_DIR/conf/conf.sh"
+
+{
+    echo '#!/bin/bash -e'
+    echo '_PAT_EFI='
+    echo '_PAT_BOOT='
+    echo '_PAT_ROOT='
+    echo '_PAT_SWAP='
+} | sudo sh -c "cat > $_CREATE_DIR/conf/conf_mnt.sh"
+
+if [ ! -e "$_DIR/conf/conf_part.sh" ]; then
     echo 'UbuntuSettings用の設定ファイルがありません。'
     exit 1
 fi
-
-sudo cp "$ubuntu_conf_path" "$_CREATE_DIR/conf/conf.sh"
+sudo cp "$_DIR/conf/conf_part.sh" "$_CREATE_DIR/conf/conf_part.sh"
 
 sudo chmod 744 -R "$_CREATE_DIR"
