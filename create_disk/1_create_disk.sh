@@ -38,6 +38,7 @@ bash "$_DIR/com/sys_setup.sh"
 
 # 初期化シェルのコピー
 sudo cp "$_Q_DIR/100_guest_init.sh" "$_MNT_POINT/root/initialize.sh"
+sudo chroot "$_MNT_POINT" chmod 777 /root/initialize.sh
 
 # unmount
 bash "$_DIR/com/unset.sh"

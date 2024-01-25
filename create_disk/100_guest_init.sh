@@ -15,3 +15,5 @@ systemctl restart systemd-networkd
 
 # grubの更新
 update-grub
+
+apt install vim git curl
