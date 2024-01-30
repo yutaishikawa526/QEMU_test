@@ -16,6 +16,39 @@ _INIT_DISK_PATH="$_DIR/disk/init_disk.raw"
 if [[ ! -e "$_DISK_PATH" ]];then
     dd if=/dev/zero of="$_DISK_PATH" bs=1G count=1
     sudo mkfs.ext4 "$_DISK_PATH"
+
+    ## 初期化
+    #sudo sgdisk --zap-all "$_DISK_PATH";sudo partprobe
+    ## 作成
+    #sudo sgdisk --new '1::+100M' "$_DISK_PATH";sudo partprobe
+    #sudo sgdisk --new "2::+100M" "$_DISK_PATH";sudo partprobe
+    #sudo sgdisk --new "3::+100M" "$_DISK_PATH";sudo partprobe
+    #sudo sgdisk --new "4::+100M" "$_DISK_PATH";sudo partprobe
+    #sudo sgdisk --new "5::+100M" "$_DISK_PATH";sudo partprobe
+    ## パーティションコード指定
+    #sudo sgdisk --typecode 1:8300 "$_DISK_PATH";sudo partprobe
+    #sudo sgdisk --typecode 2:8300 "$_DISK_PATH";sudo partprobe
+    #sudo sgdisk --typecode 3:8300 "$_DISK_PATH";sudo partprobe
+    #sudo sgdisk --typecode 4:8300 "$_DISK_PATH";sudo partprobe
+    #sudo sgdisk --typecode 5:8300 "$_DISK_PATH";sudo partprobe
+    ## 名前付け
+    #sudo sgdisk --change-name '1:test1' "$_DISK_PATH";sudo partprobe
+    #sudo sgdisk --change-name '2:test2' "$_DISK_PATH";sudo partprobe
+    #sudo sgdisk --change-name '3:test3' "$_DISK_PATH";sudo partprobe
+    #sudo sgdisk --change-name '4:test4' "$_DISK_PATH";sudo partprobe
+    #sudo sgdisk --change-name '5:test5' "$_DISK_PATH";sudo partprobe
+    ## ループバックデバイス化
+    #sudo kpartx -a "$_DISK_PATH"
+    #loopback=`sudo losetup | grep "$_DISK_PATH" | sed -r 's#^/dev/(loop[0-9]+) *.*$#\1#g' | head -n 1`
+    ## フォーマット
+    #sudo mkfs.ext4 "/dev/mapper/$loopback"p1
+    #sudo mkfs.ext4 "/dev/mapper/$loopback"p2
+    #sudo mkfs.ext4 "/dev/mapper/$loopback"p3
+    #sudo mkfs.ext4 "/dev/mapper/$loopback"p4
+    #sudo mkfs.ext4 "/dev/mapper/$loopback"p5
+    ## 掃除
+    #sudo kpartx -d "/dev/$loopback"
+    #sudo losetup -d "/dev/$loopback"
 fi
 
 # 動かなかった
