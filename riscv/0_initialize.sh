@@ -3,12 +3,16 @@
 # 初期化
 # 必要なパッケージ、ソースコードのインストール
 
+sudo apt update
 sudo apt install -y gcc-riscv64-linux-gnu git
+sudo apt install -y qemu-system-riscv64
+# コンパイルに必要
 sudo apt install -y flex bison
 
 _DIR=$(cd $(dirname $0) ; pwd)
 _LINUX_SRC="$_DIR/clone/linux"
 _BUSYBOX_SRC="$_DIR/clone/busyBox"
+_DISK_PATH="$_DIR/disk/img.raw"
 
 if [[ -d "$_LINUX_SRC" ]]; then
     sudo rm -R "$_LINUX_SRC"
