@@ -4,6 +4,7 @@
 # 必要なパッケージ、ソースコードのインストール
 
 sudo apt install -y gcc-riscv64-linux-gnu git
+sudo apt install -y flex bison
 
 _DIR=$(cd $(dirname $0) ; pwd)
 _LINUX_SRC="$_DIR/clone/linux"
