@@ -7,12 +7,18 @@ sudo apt update
 sudo apt install -y gcc-riscv64-linux-gnu git
 sudo apt install -y qemu-system-riscv64
 # コンパイルに必要
-sudo apt install -y flex bison
+sudo apt install -y autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-dev \
+    gawk build-essential bison flex texinfo gperf libtool patchutils bc \
+    zlib1g-dev libexpat-dev
 
 _DIR=$(cd $(dirname $0) ; pwd)
 _LINUX_SRC="$_DIR/clone/linux"
 _BUSYBOX_SRC="$_DIR/clone/busyBox"
 _DISK_PATH="$_DIR/disk/img.raw"
+_KERNEL_PATH="$_DIR/disk/kernelImage"
+_BUSYBOX_PATH="$_DIR/disk/busybox"
+_INITRAMFS_PATH="$_DIR/disk/initramfs.cpio.gz"
+_INIT_DISK_PATH="$_DIR/disk/init_disk.raw"
 
 if [[ -d "$_LINUX_SRC" ]]; then
     sudo rm -R "$_LINUX_SRC"
