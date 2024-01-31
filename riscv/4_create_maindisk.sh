@@ -71,7 +71,7 @@ sed -i -E 's#^(total_device_uuid)=.*$#\1='$total_device_uuid'#g' "$tmp_sh4"
 sudo sh "$tmp_sh1" "$tmp_mnt"
 
 # ディスクの準備
-sudo debootstrap --arch riscv64 --foreign sid "$tmp_mnt" 'http://deb.debian.org/debian/' || echo 'failer'
+sudo debootstrap --arch riscv64 --foreign --include=debian-archive-keyring,wget,curl,vim sid "$tmp_mnt" 'http://deb.debian.org/debian/' || echo 'failer'
 
 # テスト
 #[Invalid Release file, no entry for main/binary-riscv64/Packages]
