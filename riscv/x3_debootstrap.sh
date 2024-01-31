@@ -8,9 +8,14 @@ root_uuid=
 swap_uuid=
 
 mnt_point=$1
+if [ "$mnt_point" = '' ]; then
+    mnt_point='/mnt'
+fi
 
 # debootstrap
-eval "$mnt_point/debootstrap/debootstrap --second-stage"
+chroot "$mnt_point" << EOF
+    /debootstrap/debootstrap --second-stage
+EOF
 
 # fstabの設定
 {
@@ -20,7 +25,7 @@ eval "$mnt_point/debootstrap/debootstrap --second-stage"
     echo "UUID=$boot_uuid /boot ext4 defaults 0 2"
     echo '# efi'
     echo "UUID=$efi_uuid /boot/efi vfat defaults 0 2"
-    if [[ $swap_uuid != '' ]]; then
+    if [ ! $swap_uuid = '' ]; then
         echo '# swap'
         echo "UUID=$swap_uuid none swap defaults 0 0"
     fi
@@ -28,7 +33,7 @@ eval "$mnt_point/debootstrap/debootstrap --second-stage"
 
 # aptのミラーサイト設定
 {
-    echo 'deb http://ftp.ports.debian.org/debian-ports jammy           main restricted universe'
-    echo 'deb http://ftp.ports.debian.org/debian-ports jammy-security  main restricted universe'
-    echo 'deb http://ftp.ports.debian.org/debian-ports jammy-updates   main restricted universe'
+    echo 'deb http://deb.debian.org/debian/ sid main'
+    echo 'deb http://deb.debian.org/debian/ unstable main'
+    echo 'deb http://deb.debian.org/debian/ experimental main'
 } > "$mnt_point/etc/apt/sources.list"
