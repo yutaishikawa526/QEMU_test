@@ -166,6 +166,9 @@ fi
 
 # その15
 # メインディスクを指定
+# 起動成功とファイルの設置は正常
+# x3_debootstrapで[cat: /debootstrap/mirror: No such file or directory]
+# カーネルのバージョンが高すぎる?
 sudo qemu-system-riscv64 -machine virt -m 2048 \
     -kernel "$_KERNEL_PATH" \
     -bios "$_OPENSBI_PATH" \
