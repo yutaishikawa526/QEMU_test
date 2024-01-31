@@ -155,12 +155,23 @@ fi
 # その14
 # opensbiを指定
 # 動いた
+#sudo qemu-system-riscv64 -machine virt -m 2048 \
+#    -kernel "$_KERNEL_PATH" \
+#    -bios "$_OPENSBI_PATH" \
+#    -append "root=/dev/vda rw console=ttyS0 init=/init" \
+#    -drive file="$_INIT_DISK_PATH",format=raw,id=hd0 \
+#    -device virtio-blk-device,drive=hd0 \
+#    -drive file="$tmp_disk_path",format=raw,media=disk,id=hd1 \
+#    -device virtio-blk-device,drive=hd1
+
+# その15
+# メインディスクを指定
 sudo qemu-system-riscv64 -machine virt -m 2048 \
     -kernel "$_KERNEL_PATH" \
     -bios "$_OPENSBI_PATH" \
     -append "root=/dev/vda rw console=ttyS0 init=/init" \
     -drive file="$_INIT_DISK_PATH",format=raw,id=hd0 \
     -device virtio-blk-device,drive=hd0 \
-    -drive file="$tmp_disk_path",format=raw,media=disk,id=hd1 \
+    -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
     -device virtio-blk-device,drive=hd1
 

@@ -3,6 +3,9 @@
 # install
 
 mnt_point=$1
+if [ "$mnt_point" = '' ]; then
+    mnt_point='/mnt'
+fi
 
 total_device_uuid=
 

@@ -162,12 +162,12 @@ function name_to_partid(){
     disk=$1
     name=$2
     num=`sudo gdisk -l "$disk" | grep -E '^ +[1-9][0-9]* +.* +'$name'$' | sed -r 's#^ +([1-9][0-9]*) +.* +'$name'$#\1#g' | head -n 1`
-    if ! [[ $num =~ ^.+$ ]]; then
+    if [[ ! $num =~ ^.+$ ]]; then
         echo 'no'
         exit
     fi
     partid_large=`sudo sgdisk "$disk" "-i=$num" | grep '^Partition unique GUID:' | sed -r 's#^Partition unique GUID: +([^ ]+)$#\1#g' | head -n 1`
-    if ! [[ $partid_large =~ ^.+$ ]]; then
+    if [[ ! $partid_large =~ ^.+$ ]]; then
         echo 'no'
         exit
     fi
@@ -196,7 +196,7 @@ function set_format(){
 function get_uuid_by_device(){
     device=$1
     uuid_type=$2
-    if ! [[ "$uuid_type" =~ ^.+$ ]]; then
+    if [[ ! "$uuid_type" =~ ^.+$ ]]; then
         uuid_type='UUID'
     fi
     uuid=`sudo blkid "$device" \

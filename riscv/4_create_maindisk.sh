@@ -6,14 +6,15 @@ _DIR=$(cd $(dirname $0) ; pwd)
 source "$_DIR/com/com.sh"
 export_env "$_DIR"
 
-if [[ ! -e "$_DISK_PATH" ]];then
+if [[ "$1" != 'disk_create=no' ]] || [[ ! -e "$_DISK_PATH" ]]; then
     dd if=/dev/zero of="$_DISK_PATH" bs=512M count=15
+
+    loopback=`set_device "$_DISK_PATH"`
+
+    # パーティション分け
+    set_partion "$loopback" '200M' '2G' '4G' '1G'
+
 fi
-
-loopback=`set_device "$_DISK_PATH"`
-
-# パーティション分け
-set_partion "$loopback" '200M' '2G' '4G' '1G'
 
 loopback=`set_device "$_DISK_PATH"`
 
@@ -70,13 +71,25 @@ sed -i -E 's#^(total_device_uuid)=.*$#\1='$total_device_uuid'#g' "$tmp_sh4"
 sudo sh "$tmp_sh1" "$tmp_mnt"
 
 # ディスクの準備
-sudo debootstrap --arch riscv64 --foreign --variant minbase jammy "$tmp_mnt" http://ftp.ports.debian.org/debian-ports
+sudo debootstrap --arch riscv64 --foreign sid "$tmp_mnt" 'http://deb.debian.org/debian/' || echo 'failer'
+
+# テスト
+#[Invalid Release file, no entry for main/binary-riscv64/Packages]
+#sudo ./disk/x2_umount.sh /home/yutaishikawa/work/QEMU_test/riscv/disk/tmp_mnt
+#tmp_path='/home/yutaishikawa/work/QEMU_test/riscv/disk/test_deboot';mkdir -p "$tmp_path";sudo rm -R "$tmp_path";mkdir -p "$tmp_path"
+#sudo debootstrap --arch riscv64 --foreign \
+#    --keyring /usr/share/keyrings/debian-ports-archive-keyring.gpg \
+#    --include=debian-ports-archive-keyring sid \
+#    "$tmp_path" http://deb.debian.org/debian-ports
+#tmp_path='/home/yutaishikawa/work/QEMU_test/riscv/disk/test_deboot';mkdir -p "$tmp_path";sudo rm -R "$tmp_path";mkdir -p "$tmp_path"
+#sudo debootstrap \
+#    --arch riscv64 --foreign \
+#    jammy \
+#    "$tmp_path" http://de.archive.ubuntu.com/ubuntu
 
 sleep 3
 
 sudo sh "$tmp_sh2" "$tmp_mnt"
-
-sleep 3
 
 # ディスクの解除
 unset_device "$_DISK_PATH"
