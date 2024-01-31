@@ -8,35 +8,35 @@ export_env "$_DIR"
 
 _INITRAMFS_PATH="$_DIR/disk/initramfs.cpio.gz"
 
-if [[ ! -e "$_DISK_PATH" ]];then
-    sudo apt install -y e2fsprogs
+tmp_disk_path="$_DIR/disk/tmp_img.raw"
 
-    dd if=/dev/zero of="$_DISK_PATH" bs=1G count=1
-    sudo mkfs.ext4 "$_DISK_PATH"
+if [[ ! -e "$tmp_disk_path" ]];then
+    dd if=/dev/zero of="$tmp_disk_path" bs=1G count=1
+    sudo mkfs.ext4 "$tmp_disk_path"
 
     # 初期化
-    sudo sgdisk --zap-all "$_DISK_PATH";sudo partprobe
+    sudo sgdisk --zap-all "$tmp_disk_path";sudo partprobe
     # 作成
-    sudo sgdisk --new '1::+100M' "$_DISK_PATH";sudo partprobe
-    sudo sgdisk --new "2::+100M" "$_DISK_PATH";sudo partprobe
-    sudo sgdisk --new "3::+100M" "$_DISK_PATH";sudo partprobe
-    sudo sgdisk --new "4::+100M" "$_DISK_PATH";sudo partprobe
-    sudo sgdisk --new "5::+100M" "$_DISK_PATH";sudo partprobe
+    sudo sgdisk --new '1::+100M' "$tmp_disk_path";sudo partprobe
+    sudo sgdisk --new "2::+100M" "$tmp_disk_path";sudo partprobe
+    sudo sgdisk --new "3::+100M" "$tmp_disk_path";sudo partprobe
+    sudo sgdisk --new "4::+100M" "$tmp_disk_path";sudo partprobe
+    sudo sgdisk --new "5::+100M" "$tmp_disk_path";sudo partprobe
     # パーティションコード指定
-    sudo sgdisk --typecode 1:8300 "$_DISK_PATH";sudo partprobe
-    sudo sgdisk --typecode 2:8300 "$_DISK_PATH";sudo partprobe
-    sudo sgdisk --typecode 3:8300 "$_DISK_PATH";sudo partprobe
-    sudo sgdisk --typecode 4:8300 "$_DISK_PATH";sudo partprobe
-    sudo sgdisk --typecode 5:8300 "$_DISK_PATH";sudo partprobe
+    sudo sgdisk --typecode 1:8300 "$tmp_disk_path";sudo partprobe
+    sudo sgdisk --typecode 2:8300 "$tmp_disk_path";sudo partprobe
+    sudo sgdisk --typecode 3:8300 "$tmp_disk_path";sudo partprobe
+    sudo sgdisk --typecode 4:8300 "$tmp_disk_path";sudo partprobe
+    sudo sgdisk --typecode 5:8300 "$tmp_disk_path";sudo partprobe
     # 名前付け
-    sudo sgdisk --change-name '1:test1' "$_DISK_PATH";sudo partprobe
-    sudo sgdisk --change-name '2:test2' "$_DISK_PATH";sudo partprobe
-    sudo sgdisk --change-name '3:test3' "$_DISK_PATH";sudo partprobe
-    sudo sgdisk --change-name '4:test4' "$_DISK_PATH";sudo partprobe
-    sudo sgdisk --change-name '5:test5' "$_DISK_PATH";sudo partprobe
+    sudo sgdisk --change-name '1:test1' "$tmp_disk_path";sudo partprobe
+    sudo sgdisk --change-name '2:test2' "$tmp_disk_path";sudo partprobe
+    sudo sgdisk --change-name '3:test3' "$tmp_disk_path";sudo partprobe
+    sudo sgdisk --change-name '4:test4' "$tmp_disk_path";sudo partprobe
+    sudo sgdisk --change-name '5:test5' "$tmp_disk_path";sudo partprobe
     # ループバックデバイス化
-    sudo kpartx -a "$_DISK_PATH"
-    loopback=`sudo losetup | grep "$_DISK_PATH" | sed -r 's#^/dev/(loop[0-9]+) *.*$#\1#g' | head -n 1`
+    sudo kpartx -a "$tmp_disk_path"
+    loopback=`sudo losetup | grep "$tmp_disk_path" | sed -r 's#^/dev/(loop[0-9]+) *.*$#\1#g' | head -n 1`
     # フォーマット
     sudo mkfs.ext4 "/dev/mapper/$loopback"p1
     sudo mkfs.ext4 "/dev/mapper/$loopback"p2
@@ -53,14 +53,14 @@ fi
 #    -nographic -m 2048 -machine virt \
 #    -bios none \
 #    -kernel "$_KERNEL_PATH" \
-#    -drive file="$_DISK_PATH",format=raw,media=disk
+#    -drive file="$tmp_disk_path",format=raw,media=disk
 
 # その2
 #sudo qemu-system-riscv64 -nographic -machine virt -m 2048 \
 #    -kernel "$_KERNEL_PATH" \
 #    -initrd "$_INITRAMFS_PATH" \
 #    -append "console=ttyS0" \
-#    -drive file="$_DISK_PATH",format=raw,media=disk
+#    -drive file="$tmp_disk_path",format=raw,media=disk
 
 # その3
 #sudo qemu-system-riscv64 -machine virt -m 2048 \
@@ -74,7 +74,7 @@ fi
 #    -kernel "$_KERNEL_PATH" \
 #    -initrd "$_INITRAMFS_PATH" \
 #    -append "root=/dev/vda rw console=ttyS0" \
-#    -drive file="$_DISK_PATH",format=raw,media=disk,id=hd0 \
+#    -drive file="$tmp_disk_path",format=raw,media=disk,id=hd0 \
 #    -device virtio-blk-device,drive=hd0
 
 # その5
@@ -131,17 +131,17 @@ fi
 #    -append "root=/dev/vda rw console=ttyS0 init=/init" \
 #    -drive file="$_INIT_DISK_PATH",format=raw,id=hd0 \
 #    -device virtio-blk-device,drive=hd0 \
-#    -drive file="$_DISK_PATH",format=raw,media=disk
+#    -drive file="$tmp_disk_path",format=raw,media=disk
 
 # その12
 # こちらも動く
-# また[$_DISK_PATH]も認識して、mountもできる
+# また[$tmp_disk_path]も認識して、mountもできる
 #sudo qemu-system-riscv64 -machine virt -m 2048 \
 #    -kernel "$_KERNEL_PATH" \
 #    -append "root=/dev/vda rw console=ttyS0 init=/init" \
 #    -drive file="$_INIT_DISK_PATH",format=raw,id=hd0 \
 #    -device virtio-blk-device,drive=hd0 \
-#    -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
+#    -drive file="$tmp_disk_path",format=raw,media=disk,id=hd1 \
 #    -device virtio-blk-device,drive=hd1
 
 # その13
@@ -161,6 +161,6 @@ sudo qemu-system-riscv64 -machine virt -m 2048 \
     -append "root=/dev/vda rw console=ttyS0 init=/init" \
     -drive file="$_INIT_DISK_PATH",format=raw,id=hd0 \
     -device virtio-blk-device,drive=hd0 \
-    -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
+    -drive file="$tmp_disk_path",format=raw,media=disk,id=hd1 \
     -device virtio-blk-device,drive=hd1
 

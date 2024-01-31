@@ -6,6 +6,8 @@ _DIR=$(cd $(dirname $0) ; pwd)
 source "$_DIR/com/com.sh"
 export_env "$_DIR"
 
+is_dir "$_BUSYBOX_SRC"
+
 (cd "$_BUSYBOX_SRC";make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- defconfig)
 echo 'here , enable [Settings]->[Build options]->[static binary]'
 (cd "$_BUSYBOX_SRC";make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- menuconfig)
