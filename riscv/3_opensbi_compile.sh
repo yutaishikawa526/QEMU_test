@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 
-# カーネルコンパイル
+# openSBIのコンパイル
 
 _DIR=$(cd $(dirname $0) ; pwd)
 _LINUX_SRC="$_DIR/clone/linux"
@@ -12,8 +12,6 @@ _BUSYBOX_PATH="$_DIR/disk/busybox"
 _OPENSBI_PATH="$_DIR/disk/opensbi"
 _INIT_DISK_PATH="$_DIR/disk/init_disk.raw"
 
-(cd "$_LINUX_SRC";make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- defconfig)
-(cd "$_LINUX_SRC";make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- menuconfig)
-(cd "$_LINUX_SRC";make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- -j $(nproc))
+(cd "$_OPENSBI_SRC";make PLATFORM=generic ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- -j $(nproc))
 
-sudo cp "$_LINUX_SRC/arch/riscv/boot/Image" "$_KERNEL_PATH"
+sudo cp "$_OPENSBI_SRC/build/platform/generic/firmware/fw_jump.elf" "$_OPENSBI_PATH"

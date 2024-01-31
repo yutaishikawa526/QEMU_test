@@ -14,10 +14,11 @@ sudo apt install -y autoconf automake autotools-dev curl libmpc-dev libmpfr-dev 
 _DIR=$(cd $(dirname $0) ; pwd)
 _LINUX_SRC="$_DIR/clone/linux"
 _BUSYBOX_SRC="$_DIR/clone/busyBox"
+_OPENSBI_SRC="$_DIR/clone/opensbi"
 _DISK_PATH="$_DIR/disk/img.raw"
 _KERNEL_PATH="$_DIR/disk/kernelImage"
 _BUSYBOX_PATH="$_DIR/disk/busybox"
-_INITRAMFS_PATH="$_DIR/disk/initramfs.cpio.gz"
+_OPENSBI_PATH="$_DIR/disk/opensbi"
 _INIT_DISK_PATH="$_DIR/disk/init_disk.raw"
 
 if [[ -d "$_LINUX_SRC" ]]; then
@@ -25,6 +26,9 @@ if [[ -d "$_LINUX_SRC" ]]; then
 fi
 if [[ -d "$_BUSYBOX_SRC" ]]; then
     sudo rm -R "$_BUSYBOX_SRC"
+fi
+if [[ -d "$_OPENSBI_SRC" ]]; then
+    sudo rm -R "$_OPENSBI_SRC"
 fi
 
 git clone --depth 1 'https://github.com/torvalds/linux.git' "$_LINUX_SRC"
@@ -37,4 +41,10 @@ git clone --depth 1 'https://git.busybox.net/busybox' "$_BUSYBOX_SRC"
 cd "$_BUSYBOX_SRC"
 git fetch --depth 1 origin '1_34_1'
 git checkout -b '1_34_1_head' FETCH_HEAD
+cd "$_DIR"
+
+git clone --depth 1 'https://github.com/riscv-software-src/opensbi' "$_OPENSBI_SRC"
+cd "$_OPENSBI_SRC"
+git fetch --depth 1 origin 'v1.3'
+git checkout -b 'v1_3_head' FETCH_HEAD
 cd "$_DIR"
