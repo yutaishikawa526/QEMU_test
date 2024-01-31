@@ -6,6 +6,8 @@ _DIR=$(cd $(dirname $0) ; pwd)
 source "$_DIR/com/com.sh"
 export_env "$_DIR"
 
+is_dir "$_LINUX_SRC"
+
 (cd "$_LINUX_SRC";make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- defconfig)
 (cd "$_LINUX_SRC";make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- menuconfig)
 (cd "$_LINUX_SRC";make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- -j $(nproc))

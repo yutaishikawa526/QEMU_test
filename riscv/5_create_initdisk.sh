@@ -6,10 +6,7 @@ _DIR=$(cd $(dirname $0) ; pwd)
 source "$_DIR/com/com.sh"
 export_env "$_DIR"
 
-if [[ ! -e "$_BUSYBOX_PATH" ]]; then
-    echo 'busybox not exist . compile it by 2_busybox_compile.sh'
-    exit 1
-fi
+is_file "$_BUSYBOX_PATH"
 
 if [[ -e "$_INIT_DISK_PATH" ]];then
     sudo rm "$_INIT_DISK_PATH"

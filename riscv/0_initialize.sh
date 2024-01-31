@@ -6,6 +6,7 @@
 sudo apt update
 sudo apt install -y gcc-riscv64-linux-gnu git
 sudo apt install -y qemu-system-riscv64
+sudo apt install -y debootstrap
 # コンパイルに必要
 sudo apt install -y autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-dev \
     gawk build-essential bison flex texinfo gperf libtool patchutils bc \
