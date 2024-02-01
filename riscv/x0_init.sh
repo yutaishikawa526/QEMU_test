@@ -1,5 +1,7 @@
 #!/bin/busybox sh
 
+# riscv上で実行される
+
 # Make symlinks
 /bin/busybox --install -s
 
@@ -9,11 +11,12 @@ mount -t proc      proc      /proc
 mount -t sysfs     sysfs     /sys
 mount -t tmpfs     tmpfs     /tmp
 
-echo '------------------ start debootstrap second stage ------------------'
-
-sh '/home/x1_debootstrap.sh'
-
-echo '------------------ finish debootstrap second stage ------------------'
+echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+echo ''
+echo "exec command '/home/x1_debootstrap.sh'"
+echo 'this will start debootstrap second stage'
+echo ''
+echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
 
 # Busybox TTY fix
 setsid cttyhack sh

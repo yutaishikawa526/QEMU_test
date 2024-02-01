@@ -201,7 +201,7 @@ function get_uuid_by_device(){
     fi
     uuid=`sudo blkid "$device" \
         | grep -E '^/dev/.*:( .*)? '$uuid_type'=([^ ]+)( .*)?$' \
-        | sed -r 's#.*^/dev/.*:( .*)? '$uuid_type'=([^ ]+)( .*)?$#\2#g' \
+        | sed -r 's#^/dev/.*:( .*)? '$uuid_type'=([^ ]+)( .*)?$#\2#g' \
         | head -n 1`
 
     if [[ $uuid =~ ^.+$ ]]; then
