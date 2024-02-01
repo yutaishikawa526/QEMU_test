@@ -17,6 +17,9 @@ chroot "$mnt_point" << EOF
     /debootstrap/debootstrap --second-stage
 EOF
 
+# resolv.confの修正
+sed -i -E 's#^nameserver.*$#nameserver 8.8.8.8#g' "$mnt_point/etc/resolv.conf"
+
 # fstabの設定
 {
     echo '# root'

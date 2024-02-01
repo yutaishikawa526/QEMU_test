@@ -27,7 +27,7 @@ chroot "$mnt_point" << EOF
 EOF
 
 # 最小のubuntuのインストール
-chroot "$mnt_point" apt install -y --no-install-recommends ubuntu-minimal
+chroot "$mnt_point" apt install -y --no-install-recommends tzdata locales keyboard-configuration
 
 # 日付、地域、キーボード設定
 chroot "$mnt_point" dpkg-reconfigure tzdata
@@ -54,4 +54,3 @@ chroot "$mnt_point" << EOF
     update-grub
     exit
 EOF
-
