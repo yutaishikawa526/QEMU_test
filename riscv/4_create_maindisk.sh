@@ -36,6 +36,7 @@ if [[ "$swap_partid" != 'no' ]]; then
     swap_dev=`sudo findfs PARTUUID="$swap_partid"`
 fi
 
+# パーティションのUUIDを取得
 efi_uuid=`get_uuid_by_device "$efi_dev"`
 boot_uuid=`get_uuid_by_device "$boot_dev"`
 root_uuid=`get_uuid_by_device "$root_dev"`
@@ -47,6 +48,7 @@ fi
 tmp_mnt="$_DIR/disk/tmp_mnt"
 mkdir -p "$tmp_mnt"
 
+# x1_debootstrapにパーティションのUUID情報を書き込み
 deb_sh="$_DIR/disk/x1_debootstrap.sh"
 sudo cp "$_DIR/x1_debootstrap.sh" "$deb_sh"
 sudo chmod +x "$deb_sh"
