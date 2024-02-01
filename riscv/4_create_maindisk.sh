@@ -68,7 +68,7 @@ sed -i -E 's#^(swap_uuid)=.*$#\1='$swap_uuid'#g' "$tmp_sh3"
 
 sed -i -E 's#^(total_device_uuid)=.*$#\1='$total_device_uuid'#g' "$tmp_sh4"
 
-sudo sh "$tmp_sh1" "$tmp_mnt"
+sudo sh "$tmp_sh1" "$tmp_mnt" 'sysmount=no'
 
 # ディスクの準備
 sudo debootstrap --arch riscv64 --foreign --include=debian-archive-keyring,wget,curl,vim sid "$tmp_mnt" 'http://deb.debian.org/debian/' || echo 'failer'

@@ -20,9 +20,12 @@ mkdir -p "$mnt_point/boot"
 mount -t ext4 "$boot_dev" "$mnt_point/boot"
 mkdir -p "$mnt_point/boot/efi"
 mount "$efi_dev" "$mnt_point/boot/efi"
-mkdir -p "$mnt_point/dev"
-mkdir -p "$mnt_point/sys"
-mkdir -p "$mnt_point/proc"
-mount --bind /dev "$mnt_point/dev"
-mount --bind /sys "$mnt_point/sys"
-mount --bind /proc "$mnt_point/proc"
+
+if [ ! "$1" = 'sysmount=no' ] && [ ! "$2" = 'sysmount=no' ]; then
+    mkdir -p "$mnt_point/dev"
+    mkdir -p "$mnt_point/sys"
+    mkdir -p "$mnt_point/proc"
+    mount --bind /dev "$mnt_point/dev"
+    mount --bind /sys "$mnt_point/sys"
+    mount --bind /proc "$mnt_point/proc"
+fi
