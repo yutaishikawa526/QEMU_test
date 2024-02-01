@@ -203,16 +203,25 @@ fi
 # ネット接続は[{ echo '[Match]';echo 'Name=eth0';echo '[Network]';echo 'DHCP=yes'; } > /etc/systemd/network/ethernet.network]
 # と
 # resolv.conf設定[{ echo '[network]';echo 'nameserver 8.8.8.8'; } > /etc/resolv.conf]
-# をして、その後[systemctl restart systemd.networkd;systemctl enable systemd.networkd;]
+# をして、その後[systemctl restart systemd-networkd;systemctl enable systemd-networkd;]
 # で接続可能になる
 # ただしapt updateすると、
 # [E: Release file for http://~~ is not valid yet]とでる
 # 日付がバグっていると発生するらしい
 # [date --set='2024/02/01 18:00:00']とか
-sudo qemu-system-riscv64 -machine virt -m 2048 \
-    -kernel "$_KERNEL_PATH" \
+#sudo qemu-system-riscv64 -machine virt -m 2048 \
+#    -kernel "$_KERNEL_PATH" \
+#    -bios "$_OPENSBI_PATH" \
+#    -append "root=/dev/vda4 rw console=ttyS0" \
+#    -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
+#    -device virtio-blk-device,drive=hd1 \
+#    -netdev user,id=net0 -device virtio-net-device,netdev=net0
+
+# その18
+# kernel initramfsをインストール後、直接起動
+sudo qemu-system-riscv64 \
+    -machine virt -m 2048 \
     -bios "$_OPENSBI_PATH" \
-    -append "root=/dev/vda4 rw console=ttyS0" \
     -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
     -device virtio-blk-device,drive=hd1 \
     -netdev user,id=net0 -device virtio-net-device,netdev=net0

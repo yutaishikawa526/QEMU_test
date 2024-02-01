@@ -87,7 +87,7 @@ echo '--------- set mirror url ---------'
 echo '--------- setup systemd-networkd ---------'
 
 # networkdの起動設定
-chroot "$mnt_point" systemctl enable systemd.networkd
+chroot "$mnt_point" systemctl enable systemd-networkd
 {
     echo ''
     echo '[Match]'
