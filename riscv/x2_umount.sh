@@ -7,9 +7,9 @@ if [ "$mnt_point" = '' ]; then
     mnt_point='/mnt'
 fi
 
-umount "$mnt_point/dev"
-umount "$mnt_point/sys"
-umount "$mnt_point/proc"
+umount "$mnt_point/dev" || true
+umount "$mnt_point/sys" || true
+umount "$mnt_point/proc" || true
 umount "$mnt_point/boot/efi"
 umount "$mnt_point/boot"
 umount "$mnt_point"
