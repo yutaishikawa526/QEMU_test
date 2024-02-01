@@ -169,12 +169,51 @@ fi
 # 起動成功とファイルの設置は正常
 # x3_debootstrapで[cat: /debootstrap/mirror: No such file or directory]
 # カーネルのバージョンが高すぎる?
+#sudo qemu-system-riscv64 -machine virt -m 2048 \
+#    -kernel "$_KERNEL_PATH" \
+#    -bios "$_OPENSBI_PATH" \
+#    -append "root=/dev/vda rw console=ttyS0 init=/init" \
+#    -drive file="$_INIT_DISK_PATH",format=raw,id=hd0 \
+#    -device virtio-blk-device,drive=hd0 \
+#    -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
+#    -device virtio-blk-device,drive=hd1
+
+# その16
+# ネットワークを追加
+# x4_chroot_install.shはネイティブに実行する必要があるかも?
+# chroot中だとsystemctlがあまり使えないっぽいから
+# そのためネットワーク設定ができなさそう
+#sudo qemu-system-riscv64 -machine virt -m 2048 \
+#    -kernel "$_KERNEL_PATH" \
+#    -bios "$_OPENSBI_PATH" \
+#    -append "root=/dev/vda rw console=ttyS0 init=/init" \
+#    -drive file="$_INIT_DISK_PATH",format=raw,id=hd0 \
+#    -device virtio-blk-device,drive=hd0 \
+#    -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
+#    -device virtio-blk-device,drive=hd1 \
+#    -netdev user,id=net0 -device virtio-net-device,netdev=net0
+
+# その17
+# main diskをrootで実行
+# まだカーネル等のインストールはしていないので、そこは指定
+# うまくいっているように見える
+# [Failed to mount boot-efi.mount - /boot/efi]
+# [See 'systemctl status boot-efi.mount' for details.]
+# となって[/boot/efi]がマウントできていない←vfatが問題?
+# ネット接続は[{ echo '[Match]';echo 'Name=eth0';echo '[Network]';echo 'DHCP=yes'; } > /etc/systemd/network/ethernet.network]
+# と
+# resolv.conf設定[{ echo '[network]';echo 'nameserver 8.8.8.8'; } > /etc/resolv.conf]
+# をして、その後[systemctl restart systemd.networkd;systemctl enable systemd.networkd;]
+# で接続可能になる
+# ただしapt updateすると、
+# [E: Release file for http://~~ is not valid yet]とでる
+# 日付がバグっていると発生するらしい
+# [date --set='2024/02/01 18:00:00']とか
 sudo qemu-system-riscv64 -machine virt -m 2048 \
     -kernel "$_KERNEL_PATH" \
     -bios "$_OPENSBI_PATH" \
-    -append "root=/dev/vda rw console=ttyS0 init=/init" \
-    -drive file="$_INIT_DISK_PATH",format=raw,id=hd0 \
-    -device virtio-blk-device,drive=hd0 \
+    -append "root=/dev/vda4 rw console=ttyS0" \
     -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
-    -device virtio-blk-device,drive=hd1
+    -device virtio-blk-device,drive=hd1 \
+    -netdev user,id=net0 -device virtio-net-device,netdev=net0
 
