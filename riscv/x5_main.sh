@@ -3,9 +3,6 @@
 # インストールの全実行
 
 mnt_point=/mnt
-if [ "$mnt_point" = '' ]; then
-    mnt_point='/mnt'
-fi
 
 ./x1_mount_by_uuid.sh "$mnt_point"
 
