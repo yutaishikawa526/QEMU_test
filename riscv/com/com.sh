@@ -211,3 +211,13 @@ function get_uuid_by_device(){
         exit 1
     fi
 }
+
+# 指定のディレクトリ以下を全てアンマウント
+function umount_all(){
+    mnt_point=$1
+
+    sudo mount | grep "on $mnt_point" \
+        | sed -E 's#^.* on ('$mnt_point'[^ ]*) type .*$#\1#g' \
+        | tac \
+        | xargs -I mntP sudo umount 'mntP'
+}

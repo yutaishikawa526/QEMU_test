@@ -21,57 +21,58 @@ loopback=`set_device "$_DISK_PATH"`
 # フォーマット
 set_format "$_DISK_PATH"
 
+# パーティションIDの取得
 efi_partid=`name_to_partid "$_DISK_PATH" 'efi'`
 boot_partid=`name_to_partid "$_DISK_PATH" 'boot'`
 root_partid=`name_to_partid "$_DISK_PATH" 'root'`
 swap_partid=`name_to_partid "$_DISK_PATH" 'swap'`
 
+# パーティション毎のデバイスを取得
 efi_dev=`sudo findfs PARTUUID="$efi_partid"`
 boot_dev=`sudo findfs PARTUUID="$boot_partid"`
 root_dev=`sudo findfs PARTUUID="$root_partid"`
-swap_dev=`sudo findfs PARTUUID="$swap_partid"`
+swap_dev=
+if [[ "$swap_partid" != 'no' ]]; then
+    swap_dev=`sudo findfs PARTUUID="$swap_partid"`
+fi
 
-total_device_uuid=`get_uuid_by_device "$loopback" 'PTUUID'`
 efi_uuid=`get_uuid_by_device "$efi_dev"`
 boot_uuid=`get_uuid_by_device "$boot_dev"`
 root_uuid=`get_uuid_by_device "$root_dev"`
-swap_uuid=`get_uuid_by_device "$swap_dev"`
+swap_uuid=
+if [[ "$swap_partid" != 'no' ]]; then
+    swap_uuid=`get_uuid_by_device "$swap_dev"`
+fi
 
 tmp_mnt="$_DIR/disk/tmp_mnt"
 mkdir -p "$tmp_mnt"
 
-tmp_sh1="$_DIR/disk/x1_mount_by_uuid.sh"
-sudo cp "$_DIR/x1_mount_by_uuid.sh" "$tmp_sh1"
-tmp_sh2="$_DIR/disk/x2_umount.sh"
-sudo cp "$_DIR/x2_umount.sh" "$tmp_sh2"
-tmp_sh3="$_DIR/disk/x3_debootstrap.sh"
-sudo cp "$_DIR/x3_debootstrap.sh" "$tmp_sh3"
-tmp_sh4="$_DIR/disk/x4_chroot_install.sh"
-sudo cp "$_DIR/x4_chroot_install.sh" "$tmp_sh4"
-tmp_sh5="$_DIR/disk/x5_main.sh"
-sudo cp "$_DIR/x5_main.sh" "$tmp_sh5"
+deb_sh="$_DIR/disk/x1_debootstrap.sh"
+sudo cp "$_DIR/x1_debootstrap.sh" "$deb_sh"
+sudo chmod +x "$deb_sh"
 
-sudo chmod +x "$tmp_sh1"
-sudo chmod +x "$tmp_sh2"
-sudo chmod +x "$tmp_sh3"
-sudo chmod +x "$tmp_sh4"
-sudo chmod +x "$tmp_sh5"
+sed -i -E 's#^(efi_uuid)=.*$#\1='$efi_uuid'#g' "$deb_sh"
+sed -i -E 's#^(boot_uuid)=.*$#\1='$boot_uuid'#g' "$deb_sh"
+sed -i -E 's#^(root_uuid)=.*$#\1='$root_uuid'#g' "$deb_sh"
+if [[ "$swap_partid" != 'no' ]]; then
+    sed -i -E 's#^(swap_uuid)=.*$#\1='$swap_uuid'#g' "$deb_sh"
+fi
 
-sed -i -E 's#^(efi_uuid)=.*$#\1='$efi_uuid'#g' "$tmp_sh1"
-sed -i -E 's#^(boot_uuid)=.*$#\1='$boot_uuid'#g' "$tmp_sh1"
-sed -i -E 's#^(root_uuid)=.*$#\1='$root_uuid'#g' "$tmp_sh1"
-
-sed -i -E 's#^(efi_uuid)=.*$#\1='$efi_uuid'#g' "$tmp_sh3"
-sed -i -E 's#^(boot_uuid)=.*$#\1='$boot_uuid'#g' "$tmp_sh3"
-sed -i -E 's#^(root_uuid)=.*$#\1='$root_uuid'#g' "$tmp_sh3"
-sed -i -E 's#^(swap_uuid)=.*$#\1='$swap_uuid'#g' "$tmp_sh3"
-
-sed -i -E 's#^(total_device_uuid)=.*$#\1='$total_device_uuid'#g' "$tmp_sh4"
-
-sudo sh "$tmp_sh1" "$tmp_mnt" 'sysmount=no'
+# マウント(sys,proc,devは除外)
+sudo mkdir -p "$tmp_mnt"
+sudo mount -t ext4 "$root_dev" "$tmp_mnt"
+sudo mkdir -p "$tmp_mnt/boot"
+sudo mount -t ext4 "$boot_dev" "$tmp_mnt/boot"
+sudo mkdir -p "$tmp_mnt/boot/efi"
+sudo mount -t vfat "$efi_dev" "$tmp_mnt/boot/efi"
 
 # ディスクの準備
-sudo debootstrap --arch riscv64 --foreign --include=debian-archive-keyring,wget,curl,vim sid "$tmp_mnt" 'http://deb.debian.org/debian/'
+sudo debootstrap \
+    --arch riscv64 --foreign \
+    --keyring /usr/share/keyrings/debian-archive-keyring.gpg \
+    --include=debian-archive-keyring,curl,vim \
+    sid "$tmp_mnt" \
+    'http://deb.debian.org/debian/'
 
 # テスト
 #[Invalid Release file, no entry for main/binary-riscv64/Packages]
@@ -89,7 +90,8 @@ sudo debootstrap --arch riscv64 --foreign --include=debian-archive-keyring,wget,
 
 sleep 3
 
-sudo sh "$tmp_sh2" "$tmp_mnt"
+# アンマウント
+umount_all "$tmp_mnt"
 
 # ディスクの解除
 unset_device "$_DISK_PATH"
