@@ -6,7 +6,7 @@ _DIR=$(cd $(dirname $0) ; pwd)
 source "$_DIR/com/com.sh"
 export_env "$_DIR"
 
-if [[ "$1" != 'disk_create=no' ]] || [[ ! -e "$_DISK_PATH" ]]; then
+if [[ "$1" == 'disk_create=yes' ]] || [[ ! -e "$_DISK_PATH" ]] ; then
     dd if=/dev/zero of="$_DISK_PATH" bs=512M count=15
 
     loopback=`set_device "$_DISK_PATH"`
@@ -71,7 +71,7 @@ sudo mount -t vfat "$efi_dev" "$tmp_mnt/boot/efi"
 # ディスクの準備
 sudo debootstrap \
     --arch riscv64 --foreign \
-    --keyring /usr/share/keyrings/debian-archive-keyring.gpg \
+    --no-check-gpg \
     --include=debian-archive-keyring,curl,vim \
     sid "$tmp_mnt" \
     'http://deb.debian.org/debian/'
