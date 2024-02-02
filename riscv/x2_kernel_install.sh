@@ -34,3 +34,6 @@ dpkg-reconfigure locales
 apt install -y u-boot-menu
 
 # u-bootの設定
+sed -i -E 's@^.*U_BOOT_PARAMETERS.*$@U_BOOT_PARAMETERS="rw noquiet"@g' '/etc/default/u-boot'
+
+u-boot-update
