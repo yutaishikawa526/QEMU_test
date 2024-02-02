@@ -7,13 +7,13 @@ source "$_DIR/com/com.sh"
 export_env "$_DIR"
 
 # ディスクイメージファイル作成
-dd if=/dev/zero of="$_DISK_PATH" bs=256M count=33
+dd if=/dev/zero of="$_DISK_PATH" bs=512M count=$_DISK_TOTAL_SIZE
 
 # ループバックデバイス設定
 loopback=`set_device "$_DISK_PATH"`
 
 # パーティション分け
-set_partion "$loopback" '2G' '4G' '2G'
+set_partion "$loopback" "$_DISK_BOOT_SIZE" "$_DISK_ROOT_SIZE" "$_DISK_SWAP_SIZE"
 
 sleep 3
 

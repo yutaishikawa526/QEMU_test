@@ -41,7 +41,8 @@ sleep 1
 
 # 起動
 # !!!注:rootをUUIDによる指定ができない
-sudo qemu-system-riscv64 -machine virt -m 2048 \
+sudo qemu-system-riscv64 \
+    -machine virt -m "$_QEMU_MEMORY" \
     -kernel "$_KERNEL_PATH" \
     -bios "$_OPENSBI_PATH" \
     -append "root=/dev/vda2 rw console=ttyS0" \

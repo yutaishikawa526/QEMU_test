@@ -45,6 +45,19 @@ function export_env(){
     export _DISK_PATH
 
     export _COM_DIR
+
+    # 設定ファイルの読み込み
+    if [[ -e "$top_dir/conf/conf.sh" ]]; then
+        source "$top_dir/conf/conf.sh"
+    else
+        source "$top_dir/conf/conf-sample.sh"
+    fi
+
+    export _QEMU_MEMORY
+    export _DISK_TOTAL_SIZE
+    export _DISK_ROOT_SIZE
+    export _DISK_BOOT_SIZE
+    export _DISK_SWAP_SIZE
 }
 
 # 関数が定義済みか確認
