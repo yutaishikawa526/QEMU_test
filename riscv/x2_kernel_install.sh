@@ -5,7 +5,6 @@
 
 # ネットワーク設定
 systemctl enable systemd-networkd
-systemctl restart systemd-networkd
 {
     echo ''
     echo '[Match]'
@@ -15,6 +14,7 @@ systemctl restart systemd-networkd
     echo 'DHCP=yes'
     echo ''
 } > '/etc/systemd/network/ethernet.network'
+systemctl restart systemd-networkd
 
 apt update -y
 
