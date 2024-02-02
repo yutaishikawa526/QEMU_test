@@ -19,10 +19,12 @@ function export_env(){
     _LINUX_SRC="$top_dir/clone/linux"
     _BUSYBOX_SRC="$top_dir/clone/busyBox"
     _OPENSBI_SRC="$top_dir/clone/opensbi"
+    _UBOOT_SRC="$top_dir/clone/uboot"
 
     _KERNEL_PATH="$top_dir/disk/kernelImage"
     _BUSYBOX_PATH="$top_dir/disk/busybox"
     _OPENSBI_PATH="$top_dir/disk/opensbi"
+    _OPENSBI_UBOOT_PATH="$top_dir/disk/opensbi_uboot"
 
     _INIT_DISK_PATH="$top_dir/disk/init_disk.raw"
     _DISK_PATH="$top_dir/disk/img.raw"
@@ -32,10 +34,12 @@ function export_env(){
     export _LINUX_SRC
     export _BUSYBOX_SRC
     export _OPENSBI_SRC
+    export _UBOOT_SRC
 
     export _KERNEL_PATH
     export _BUSYBOX_PATH
     export _OPENSBI_PATH
+    export _OPENSBI_UBOOT_PATH
 
     export _INIT_DISK_PATH
     export _DISK_PATH
@@ -59,7 +63,6 @@ check_func 'sgdisk' 'gdisk'
 check_func 'partprobe' 'parted'
 check_func 'losetup' 'mount'
 check_func 'kpartx' 'kpartx'
-check_func 'mkfs.vfat' 'dosfstools'
 check_func 'mkfs.ext4' 'e2fsprogs'
 check_func 'mkswap' 'util-linux'
 check_func 'findfs' 'util-linux'
@@ -113,45 +116,37 @@ function set_device(){
 
 # パーティション分けを行う
 # $1:ディスクパス
-# $2:efiパーティションのサイズ
-# $3:bootパーティションのサイズ
-# $4:rootパーティションのサイズ
-# $5:swapパーティションのサイズ
+# $2:bootパーティションのサイズ
+# $3:rootパーティションのサイズ
+# $4:swapパーティションのサイズ
 function set_partion(){
     disk=$1
-    efi_size=$2
-    boot_size=$3
-    root_size=$4
-    swap_size=$5
+    boot_size=$2
+    root_size=$3
+    swap_size=$4
 
     # 初期化
     sudo sgdisk --zap-all "$disk";sudo partprobe
 
     # 作成
-    sudo sgdisk --new '1::+1M' "$disk";sudo partprobe
-    sudo sgdisk --new "2::+$efi_size" "$disk";sudo partprobe
-    sudo sgdisk --new "3::+$boot_size" "$disk";sudo partprobe
-    sudo sgdisk --new "4::+$root_size" "$disk";sudo partprobe
+    sudo sgdisk --new "1::+$boot_size" "$disk";sudo partprobe
+    sudo sgdisk --new "2::+$root_size" "$disk";sudo partprobe
     if [[ "$swap_size" != 'no' ]]; then
-        sudo sgdisk --new "5::+$swap_size" "$disk";sudo partprobe
+        sudo sgdisk --new "3::+$swap_size" "$disk";sudo partprobe
     fi
 
     # パーティションコード指定
-    sudo sgdisk --typecode 1:ef02 "$disk";sudo partprobe
-    sudo sgdisk --typecode 2:ef00 "$disk";sudo partprobe
-    sudo sgdisk --typecode 3:8300 "$disk";sudo partprobe
-    sudo sgdisk --typecode 4:8300 "$disk";sudo partprobe
+    sudo sgdisk --typecode 1:8300 "$disk";sudo partprobe
+    sudo sgdisk --typecode 2:8300 "$disk";sudo partprobe
     if [[ "$swap_size" != 'no' ]]; then
-        sudo sgdisk --typecode 5:8200 "$disk";sudo partprobe
+        sudo sgdisk --typecode 3:8200 "$disk";sudo partprobe
     fi
 
     # 名前付け
-    sudo sgdisk --change-name '1:biosgrub' "$disk";sudo partprobe
-    sudo sgdisk --change-name '2:efi' "$disk";sudo partprobe
-    sudo sgdisk --change-name '3:boot' "$disk";sudo partprobe
-    sudo sgdisk --change-name '4:root' "$disk";sudo partprobe
+    sudo sgdisk --change-name '1:boot' "$disk";sudo partprobe
+    sudo sgdisk --change-name '2:root' "$disk";sudo partprobe
     if [[ "$swap_size" != 'no' ]]; then
-        sudo sgdisk --change-name '5:swap' "$disk";sudo partprobe
+        sudo sgdisk --change-name '3:swap' "$disk";sudo partprobe
     fi
 
 }
@@ -179,17 +174,38 @@ function name_to_partid(){
 function set_format(){
     disk=$1
 
-    efi_partid=`name_to_partid "$disk" 'efi'`
     boot_partid=`name_to_partid "$disk" 'boot'`
     root_partid=`name_to_partid "$disk" 'root'`
     swap_partid=`name_to_partid "$disk" 'swap'`
 
-    sudo mkfs.vfat `sudo findfs PARTUUID="$efi_partid"`
     sudo mkfs.ext4 `sudo findfs PARTUUID="$boot_partid"`
     sudo mkfs.ext4 `sudo findfs PARTUUID="$root_partid"`
     if [[ $swap_partid != 'no' ]]; then
         sudo mkswap `sudo findfs PARTUUID="$swap_partid"`
     fi
+}
+
+# メインディスクをマウントする
+# ただし、sys,proc,devはマウントしない(chrootできない)
+# $1:ディスクパス
+# $2:ルートマウントポイント
+function mount_main_disk(){
+    disk=$1
+    mnt_point=$2
+
+    # パーティションIDの取得
+    boot_partid=`name_to_partid "$disk" 'boot'`
+    root_partid=`name_to_partid "$disk" 'root'`
+
+    # パーティション毎のデバイスを取得
+    boot_dev=`sudo findfs PARTUUID="$boot_partid"`
+    root_dev=`sudo findfs PARTUUID="$root_partid"`
+
+    # マウント(sys,proc,devは除外)
+    sudo mkdir -p "$mnt_point"
+    sudo mount -t ext4 "$root_dev" "$mnt_point"
+    sudo mkdir -p "$mnt_point/boot"
+    sudo mount -t ext4 "$boot_dev" "$mnt_point/boot"
 }
 
 # デバイスからUUIDを取得する
