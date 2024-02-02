@@ -8,45 +8,45 @@ export_env "$_DIR"
 
 _INITRAMFS_PATH="$_DIR/disk/initramfs.cpio.gz"
 
-tmp_disk_path="$_DIR/disk/tmp_img.raw"
-
-if [[ ! -e "$tmp_disk_path" ]];then
-    dd if=/dev/zero of="$tmp_disk_path" bs=1G count=1
-    sudo mkfs.ext4 "$tmp_disk_path"
-
-    # 初期化
-    sudo sgdisk --zap-all "$tmp_disk_path";sudo partprobe
-    # 作成
-    sudo sgdisk --new '1::+100M' "$tmp_disk_path";sudo partprobe
-    sudo sgdisk --new "2::+100M" "$tmp_disk_path";sudo partprobe
-    sudo sgdisk --new "3::+100M" "$tmp_disk_path";sudo partprobe
-    sudo sgdisk --new "4::+100M" "$tmp_disk_path";sudo partprobe
-    sudo sgdisk --new "5::+100M" "$tmp_disk_path";sudo partprobe
-    # パーティションコード指定
-    sudo sgdisk --typecode 1:8300 "$tmp_disk_path";sudo partprobe
-    sudo sgdisk --typecode 2:8300 "$tmp_disk_path";sudo partprobe
-    sudo sgdisk --typecode 3:8300 "$tmp_disk_path";sudo partprobe
-    sudo sgdisk --typecode 4:8300 "$tmp_disk_path";sudo partprobe
-    sudo sgdisk --typecode 5:8300 "$tmp_disk_path";sudo partprobe
-    # 名前付け
-    sudo sgdisk --change-name '1:test1' "$tmp_disk_path";sudo partprobe
-    sudo sgdisk --change-name '2:test2' "$tmp_disk_path";sudo partprobe
-    sudo sgdisk --change-name '3:test3' "$tmp_disk_path";sudo partprobe
-    sudo sgdisk --change-name '4:test4' "$tmp_disk_path";sudo partprobe
-    sudo sgdisk --change-name '5:test5' "$tmp_disk_path";sudo partprobe
-    # ループバックデバイス化
-    sudo kpartx -a "$tmp_disk_path"
-    loopback=`sudo losetup | grep "$tmp_disk_path" | sed -r 's#^/dev/(loop[0-9]+) *.*$#\1#g' | head -n 1`
-    # フォーマット
-    sudo mkfs.ext4 "/dev/mapper/$loopback"p1
-    sudo mkfs.ext4 "/dev/mapper/$loopback"p2
-    sudo mkfs.ext4 "/dev/mapper/$loopback"p3
-    sudo mkfs.ext4 "/dev/mapper/$loopback"p4
-    sudo mkfs.ext4 "/dev/mapper/$loopback"p5
-    # 掃除
-    sudo kpartx -d "/dev/$loopback"
-    sudo losetup -d "/dev/$loopback"
-fi
+#tmp_disk_path="$_DIR/disk/tmp_img.raw"
+#
+#if [[ ! -e "$tmp_disk_path" ]];then
+#    dd if=/dev/zero of="$tmp_disk_path" bs=1G count=1
+#    sudo mkfs.ext4 "$tmp_disk_path"
+#
+#    # 初期化
+#    sudo sgdisk --zap-all "$tmp_disk_path";sudo partprobe
+#    # 作成
+#    sudo sgdisk --new '1::+100M' "$tmp_disk_path";sudo partprobe
+#    sudo sgdisk --new "2::+100M" "$tmp_disk_path";sudo partprobe
+#    sudo sgdisk --new "3::+100M" "$tmp_disk_path";sudo partprobe
+#    sudo sgdisk --new "4::+100M" "$tmp_disk_path";sudo partprobe
+#    sudo sgdisk --new "5::+100M" "$tmp_disk_path";sudo partprobe
+#    # パーティションコード指定
+#    sudo sgdisk --typecode 1:8300 "$tmp_disk_path";sudo partprobe
+#    sudo sgdisk --typecode 2:8300 "$tmp_disk_path";sudo partprobe
+#    sudo sgdisk --typecode 3:8300 "$tmp_disk_path";sudo partprobe
+#    sudo sgdisk --typecode 4:8300 "$tmp_disk_path";sudo partprobe
+#    sudo sgdisk --typecode 5:8300 "$tmp_disk_path";sudo partprobe
+#    # 名前付け
+#    sudo sgdisk --change-name '1:test1' "$tmp_disk_path";sudo partprobe
+#    sudo sgdisk --change-name '2:test2' "$tmp_disk_path";sudo partprobe
+#    sudo sgdisk --change-name '3:test3' "$tmp_disk_path";sudo partprobe
+#    sudo sgdisk --change-name '4:test4' "$tmp_disk_path";sudo partprobe
+#    sudo sgdisk --change-name '5:test5' "$tmp_disk_path";sudo partprobe
+#    # ループバックデバイス化
+#    sudo kpartx -a "$tmp_disk_path"
+#    loopback=`sudo losetup | grep "$tmp_disk_path" | sed -r 's#^/dev/(loop[0-9]+) *.*$#\1#g' | head -n 1`
+#    # フォーマット
+#    sudo mkfs.ext4 "/dev/mapper/$loopback"p1
+#    sudo mkfs.ext4 "/dev/mapper/$loopback"p2
+#    sudo mkfs.ext4 "/dev/mapper/$loopback"p3
+#    sudo mkfs.ext4 "/dev/mapper/$loopback"p4
+#    sudo mkfs.ext4 "/dev/mapper/$loopback"p5
+#    # 掃除
+#    sudo kpartx -d "/dev/$loopback"
+#    sudo losetup -d "/dev/$loopback"
+#fi
 
 # 動かなかった
 #sudo qemu-system-riscv64 \
@@ -219,10 +219,20 @@ fi
 
 # その18
 # kernel initramfsをインストール後、直接起動
+# efiでの起動は無理そうなので、openSBI + U-bootによる起動にする
+#sudo qemu-system-riscv64 \
+#    -machine virt -m 2048 \
+#    -bios "$_OPENSBI_PATH" \
+#    -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
+#    -device virtio-blk-device,drive=hd1 \
+#    -netdev user,id=net0 -device virtio-net-device,netdev=net0
+
+# その19
+# openSBI + U-bootでの起動
 sudo qemu-system-riscv64 \
     -machine virt -m 2048 \
-    -bios "$_OPENSBI_PATH" \
+    -bios "$_OPENSBI_UBOOT_PATH" \
     -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
     -device virtio-blk-device,drive=hd1 \
-    -netdev user,id=net0 -device virtio-net-device,netdev=net0
-
+    -netdev user,id=net0 -device virtio-net-device,netdev=net0 \
+    -nographic
