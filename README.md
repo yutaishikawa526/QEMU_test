@@ -1,11 +1,27 @@
 # QEMU_test
-qemuのテスト
 
-# 説明
-- 最初に`sudo apt-get install qemu-system`でqemuをインストールする必要がある
-- wsl2上からはubuntu22.0.4のisoはカーネルパニックが発生して起動できなかった
+## 説明
+- QEMUを使用したテスト
 
-# その他まとめ
+## ディレクトリ構成
+- [_trash](./_trash/) : 過去のコードを保存
+- [create_disk](./create_disk/)
+    - qemuで動くディスクイメージを`dd`で作成
+    - ホストPC上でdebootstrapによってubuntuのインストール
+    - qemuで動くゲストPCはホストPCと等しい必要がある(現コードはamd64)
+- [iso](./iso/)
+    - ISOファイルを使用してLinuxのインストールを行う
+    - qemuで動くゲストPCはホストPCと等しい必要がある(現コードはamd64)
+- [riscv](./riscv/)
+    - riscv上に「openSBI + U-boot」をbiosとし、debianをインストールしたディスクイメージを起動
+    - debianのインストールはdebootstrapを使用する
+    - preinstalledイメージを使用しない
+    - ubuntuのriscv用のリポジトリが用意されたらubuntuでも可能と思われる
+- [riscv_preinstalled](./riscv_preinstalled/)
+    - preinstalledイメージを使用してriscv上でubuntuの起動
+- [work_dir](./work_dir/) : 作業用のディレクトリ
+
+## その他まとめ
 
 - [isoでの起動について書いてある](https://qiita.com/momoto/items/b7e2a2b28f91c4cb5cec)
 
