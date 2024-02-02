@@ -29,8 +29,6 @@ function export_env(){
     _INIT_DISK_PATH="$top_dir/disk/init_disk.raw"
     _DISK_PATH="$top_dir/disk/img.raw"
 
-    _COM_DIR="$top_dir/com"
-
     export _LINUX_SRC
     export _BUSYBOX_SRC
     export _OPENSBI_SRC
@@ -43,8 +41,6 @@ function export_env(){
 
     export _INIT_DISK_PATH
     export _DISK_PATH
-
-    export _COM_DIR
 
     # 設定ファイルの読み込み
     if [[ -e "$top_dir/conf/conf.sh" ]]; then

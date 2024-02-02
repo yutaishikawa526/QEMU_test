@@ -14,7 +14,7 @@ mount -t tmpfs     tmpfs     /tmp
 echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
 echo ''
 echo "exec command '/home/x1_debootstrap.sh'"
-echo 'this will start debootstrap second stage'
+echo 'it will start debootstrap second stage'
 echo ''
 echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
 
