@@ -74,17 +74,3 @@ echo '--------- set mirror url ---------'
     echo 'deb http://deb.debian.org/debian/ unstable main'
     echo 'deb http://deb.debian.org/debian/ experimental main'
 } > "$mnt_point/etc/apt/sources.list"
-
-echo '--------- setup systemd-networkd ---------'
-
-# networkdの起動設定
-chroot "$mnt_point" systemctl enable systemd-networkd
-{
-    echo ''
-    echo '[Match]'
-    echo 'Name=eth0'
-    echo ''
-    echo '[Network]'
-    echo 'DHCP=yes'
-    echo ''
-} > "$mnt_point/etc/systemd/network/ethernet.network"

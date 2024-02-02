@@ -10,7 +10,7 @@ sudo apt install -y debootstrap debian-archive-keyring
 # コンパイルに必要
 sudo apt install -y autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-dev \
     gawk build-essential bison flex texinfo gperf libtool patchutils bc \
-    zlib1g-dev libexpat-dev
+    zlib1g-dev libexpat-dev libssl-dev
 
 _DIR=$(cd $(dirname $0) ; pwd)
 source "$_DIR/com/com.sh"

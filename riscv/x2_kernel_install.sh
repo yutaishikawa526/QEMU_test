@@ -3,6 +3,19 @@
 # カーネルその他のインストール
 # riscv上で実行される
 
+# ネットワーク設定
+systemctl enable systemd-networkd
+systemctl restart systemd-networkd
+{
+    echo ''
+    echo '[Match]'
+    echo 'Name=eth0'
+    echo ''
+    echo '[Network]'
+    echo 'DHCP=yes'
+    echo ''
+} > '/etc/systemd/network/ethernet.network'
+
 apt update -y
 
 # カーネル

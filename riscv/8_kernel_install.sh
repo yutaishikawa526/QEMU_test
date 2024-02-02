@@ -27,7 +27,7 @@ sudo mount "$root_dev" "$tmp_mnt"
 sudo cp "$_DIR/x2_kernel_install.sh" "$tmp_mnt/root/x2_kernel_install.sh"
 sudo chmod +x "$tmp_mnt/root/x2_kernel_install.sh"
 
-sleep 1
+sleep 3
 
 # アンマウント
 umount_all "$tmp_mnt"
@@ -47,4 +47,5 @@ sudo qemu-system-riscv64 -machine virt -m 2048 \
     -append "root=/dev/vda2 rw console=ttyS0" \
     -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
     -device virtio-blk-device,drive=hd1 \
-    -netdev user,id=net0 -device virtio-net-device,netdev=net0
+    -netdev user,id=net0 -device virtio-net-device,netdev=net0 \
+    -nographic

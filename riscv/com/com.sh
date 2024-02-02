@@ -24,7 +24,7 @@ function export_env(){
     _KERNEL_PATH="$top_dir/disk/kernelImage"
     _BUSYBOX_PATH="$top_dir/disk/busybox"
     _OPENSBI_PATH="$top_dir/disk/opensbi"
-    _UBOOT_PATH="$top_dir/disk/uboot"
+    _OPENSBI_UBOOT_PATH="$top_dir/disk/opensbi_uboot"
 
     _INIT_DISK_PATH="$top_dir/disk/init_disk.raw"
     _DISK_PATH="$top_dir/disk/img.raw"
@@ -39,7 +39,7 @@ function export_env(){
     export _KERNEL_PATH
     export _BUSYBOX_PATH
     export _OPENSBI_PATH
-    export _UBOOT_PATH
+    export _OPENSBI_UBOOT_PATH
 
     export _INIT_DISK_PATH
     export _DISK_PATH
@@ -183,6 +183,29 @@ function set_format(){
     if [[ $swap_partid != 'no' ]]; then
         sudo mkswap `sudo findfs PARTUUID="$swap_partid"`
     fi
+}
+
+# メインディスクをマウントする
+# ただし、sys,proc,devはマウントしない(chrootできない)
+# $1:ディスクパス
+# $2:ルートマウントポイント
+function mount_main_disk(){
+    disk=$1
+    mnt_point=$2
+
+    # パーティションIDの取得
+    boot_partid=`name_to_partid "$disk" 'boot'`
+    root_partid=`name_to_partid "$disk" 'root'`
+
+    # パーティション毎のデバイスを取得
+    boot_dev=`sudo findfs PARTUUID="$boot_partid"`
+    root_dev=`sudo findfs PARTUUID="$root_partid"`
+
+    # マウント(sys,proc,devは除外)
+    sudo mkdir -p "$mnt_point"
+    sudo mount -t ext4 "$root_dev" "$mnt_point"
+    sudo mkdir -p "$mnt_point/boot"
+    sudo mount -t ext4 "$boot_dev" "$mnt_point/boot"
 }
 
 # デバイスからUUIDを取得する
