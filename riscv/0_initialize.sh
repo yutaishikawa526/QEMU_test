@@ -25,6 +25,9 @@ fi
 if [[ -d "$_OPENSBI_SRC" ]]; then
     sudo rm -R "$_OPENSBI_SRC"
 fi
+if [[ -d "$_UBOOT_SRC" ]]; then
+    sudo rm -R "$_UBOOT_SRC"
+fi
 
 git clone --depth 1 'https://github.com/torvalds/linux.git' "$_LINUX_SRC"
 cd "$_LINUX_SRC"
@@ -42,4 +45,10 @@ git clone --depth 1 'https://github.com/riscv-software-src/opensbi' "$_OPENSBI_S
 cd "$_OPENSBI_SRC"
 git fetch --depth 1 origin 'v1.3'
 git checkout -b 'v1_3_head' FETCH_HEAD
+cd "$_DIR"
+
+git clone --depth 1 'https://github.com/u-boot/u-boot' "$_UBOOT_SRC"
+cd "$_UBOOT_SRC"
+git fetch --depth 1 origin 'v2023.10'
+git checkout -b 'v2023_10_head' FETCH_HEAD
 cd "$_DIR"

@@ -44,7 +44,7 @@ sleep 1
 sudo qemu-system-riscv64 -machine virt -m 2048 \
     -kernel "$_KERNEL_PATH" \
     -bios "$_OPENSBI_PATH" \
-    -append "root=/dev/vda4 rw console=ttyS0" \
+    -append "root=/dev/vda2 rw console=ttyS0" \
     -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
     -device virtio-blk-device,drive=hd1 \
     -netdev user,id=net0 -device virtio-net-device,netdev=net0

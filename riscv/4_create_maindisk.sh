@@ -7,12 +7,12 @@ source "$_DIR/com/com.sh"
 export_env "$_DIR"
 
 if [[ "$1" != 'disk_create=no' ]] || [[ ! -e "$_DISK_PATH" ]]; then
-    dd if=/dev/zero of="$_DISK_PATH" bs=512M count=15
+    dd if=/dev/zero of="$_DISK_PATH" bs=256M count=33
 
     loopback=`set_device "$_DISK_PATH"`
 
     # パーティション分け
-    set_partion "$loopback" '200M' '2G' '4G' '1G'
+    set_partion "$loopback" '2G' '4G' '2G'
 
 fi
 
@@ -22,13 +22,11 @@ loopback=`set_device "$_DISK_PATH"`
 set_format "$_DISK_PATH"
 
 # パーティションIDの取得
-efi_partid=`name_to_partid "$_DISK_PATH" 'efi'`
 boot_partid=`name_to_partid "$_DISK_PATH" 'boot'`
 root_partid=`name_to_partid "$_DISK_PATH" 'root'`
 swap_partid=`name_to_partid "$_DISK_PATH" 'swap'`
 
 # パーティション毎のデバイスを取得
-efi_dev=`sudo findfs PARTUUID="$efi_partid"`
 boot_dev=`sudo findfs PARTUUID="$boot_partid"`
 root_dev=`sudo findfs PARTUUID="$root_partid"`
 swap_dev=
@@ -37,7 +35,6 @@ if [[ "$swap_partid" != 'no' ]]; then
 fi
 
 # パーティションのUUIDを取得
-efi_uuid=`get_uuid_by_device "$efi_dev"`
 boot_uuid=`get_uuid_by_device "$boot_dev"`
 root_uuid=`get_uuid_by_device "$root_dev"`
 swap_uuid=
@@ -53,7 +50,6 @@ deb_sh="$_DIR/disk/x1_debootstrap.sh"
 sudo cp "$_DIR/x1_debootstrap.sh" "$deb_sh"
 sudo chmod +x "$deb_sh"
 
-sed -i -E 's#^(efi_uuid)=.*$#\1='$efi_uuid'#g' "$deb_sh"
 sed -i -E 's#^(boot_uuid)=.*$#\1='$boot_uuid'#g' "$deb_sh"
 sed -i -E 's#^(root_uuid)=.*$#\1='$root_uuid'#g' "$deb_sh"
 if [[ "$swap_partid" != 'no' ]]; then
@@ -65,8 +61,6 @@ sudo mkdir -p "$tmp_mnt"
 sudo mount -t ext4 "$root_dev" "$tmp_mnt"
 sudo mkdir -p "$tmp_mnt/boot"
 sudo mount -t ext4 "$boot_dev" "$tmp_mnt/boot"
-sudo mkdir -p "$tmp_mnt/boot/efi"
-sudo mount -t vfat "$efi_dev" "$tmp_mnt/boot/efi"
 
 # ディスクの準備
 sudo debootstrap \
