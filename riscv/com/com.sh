@@ -16,18 +16,11 @@ function export_env(){
         exit 1
     fi
 
-    _LINUX_SRC="$top_dir/clone/linux"
-    _BUSYBOX_SRC="$top_dir/clone/busyBox"
-    _OPENSBI_SRC="$top_dir/clone/opensbi"
-    _UBOOT_SRC="$top_dir/clone/uboot"
-
-    _KERNEL_PATH="$top_dir/disk/kernelImage"
-    _BUSYBOX_PATH="$top_dir/disk/busybox"
-    _OPENSBI_PATH="$top_dir/disk/opensbi"
-    _OPENSBI_UBOOT_PATH="$top_dir/disk/opensbi_uboot"
-
-    _INIT_DISK_PATH="$top_dir/disk/init_disk.raw"
-    _DISK_PATH="$top_dir/disk/img.raw"
+    # 設定ファイルの読み込み
+    source "$top_dir/conf/conf-sample.sh"
+    if [[ -e "$top_dir/conf/conf.sh" ]]; then
+        source "$top_dir/conf/conf.sh"
+    fi
 
     export _LINUX_SRC
     export _BUSYBOX_SRC
@@ -41,13 +34,6 @@ function export_env(){
 
     export _INIT_DISK_PATH
     export _DISK_PATH
-
-    # 設定ファイルの読み込み
-    if [[ -e "$top_dir/conf/conf.sh" ]]; then
-        source "$top_dir/conf/conf.sh"
-    else
-        source "$top_dir/conf/conf-sample.sh"
-    fi
 
     export _QEMU_MEMORY
     export _DISK_TOTAL_SIZE
