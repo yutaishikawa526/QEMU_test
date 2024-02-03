@@ -146,9 +146,8 @@ function set_partion(){
 
 }
 
-# ディスクとパーティションラベルからpartuuidを取得する
-# ない場合は'no'を返す
-function name_to_partid(){
+# ディスクとパーティションラベルからデバイス名を取得する
+function name_to_devname(){
     disk=$1
     name=$2
     num=`sudo gdisk -l "$disk" | grep -E '^ +[1-9][0-9]* +.* +'$name'$' | sed -r 's#^ +([1-9][0-9]*) +.* +'$name'$#\1#g' | head -n 1`
@@ -161,7 +160,9 @@ function name_to_partid(){
         echo 'no'
         exit
     fi
-    echo "$partid_large" | tr '[:upper:]' '[:lower:]'
+    partid_large=`echo "$partid_large" | tr '[:upper:]' '[:lower:]'`
+
+    sudo findfs PARTUUID="$partid_large"
 }
 
 # フォーマットを行う
@@ -169,38 +170,15 @@ function name_to_partid(){
 function set_format(){
     disk=$1
 
-    boot_partid=`name_to_partid "$disk" 'boot'`
-    root_partid=`name_to_partid "$disk" 'root'`
-    swap_partid=`name_to_partid "$disk" 'swap'`
+    boot_dev=`name_to_devname "$disk" 'boot'`
+    root_dev=`name_to_devname "$disk" 'root'`
+    swap_dev=`name_to_devname "$disk" 'swap'`
 
-    sudo mkfs.ext4 `sudo findfs PARTUUID="$boot_partid"`
-    sudo mkfs.ext4 `sudo findfs PARTUUID="$root_partid"`
-    if [[ $swap_partid != 'no' ]]; then
-        sudo mkswap `sudo findfs PARTUUID="$swap_partid"`
+    sudo mkfs.ext4 "$boot_dev"
+    sudo mkfs.ext4 "$root_dev"
+    if [[ $swap_dev != 'no' ]]; then
+        sudo mkswap "$swap_dev"
     fi
-}
-
-# メインディスクをマウントする
-# ただし、sys,proc,devはマウントしない(chrootできない)
-# $1:ディスクパス
-# $2:ルートマウントポイント
-function mount_main_disk(){
-    disk=$1
-    mnt_point=$2
-
-    # パーティションIDの取得
-    boot_partid=`name_to_partid "$disk" 'boot'`
-    root_partid=`name_to_partid "$disk" 'root'`
-
-    # パーティション毎のデバイスを取得
-    boot_dev=`sudo findfs PARTUUID="$boot_partid"`
-    root_dev=`sudo findfs PARTUUID="$root_partid"`
-
-    # マウント(sys,proc,devは除外)
-    sudo mkdir -p "$mnt_point"
-    sudo mount -t ext4 "$root_dev" "$mnt_point"
-    sudo mkdir -p "$mnt_point/boot"
-    sudo mount -t ext4 "$boot_dev" "$mnt_point/boot"
 }
 
 # デバイスからUUIDを取得する

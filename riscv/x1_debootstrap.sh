@@ -38,14 +38,6 @@ echo '--------- set password ---------'
 echo "Enter root password"
 chroot "$mnt_point" passwd
 
-echo '--------- modify resolv.conf ---------'
-
-# resolv.confの修正
-{
-    echo '[network]';
-    echo 'nameserver 8.8.8.8';
-} > "$mnt_point/etc/resolv.conf"
-
 echo '--------- set date and time ---------'
 
 # 日付の設定
@@ -60,17 +52,16 @@ echo '--------- set fstab ---------'
     echo "UUID=$root_uuid / ext4 defaults 0 1"
     echo '# boot'
     echo "UUID=$boot_uuid /boot ext4 defaults 0 2"
-    if [ ! $swap_uuid = '' ]; then
+    if [[ $swap_uuid != '' ]]; then
         echo '# swap'
         echo "UUID=$swap_uuid none swap defaults 0 0"
     fi
-} > "$mnt_point/etc/fstab"
+} | sudo sh -c "cat > $tmp_mnt/etc/fstab"
 
-echo '--------- set mirror url ---------'
+echo '--------- set resolv.conf ---------'
 
-# aptのミラーサイト設定
+# resolv.confの設定
 {
-    echo 'deb http://deb.debian.org/debian/ sid main'
-    echo 'deb http://deb.debian.org/debian/ unstable main'
-    echo 'deb http://deb.debian.org/debian/ experimental main'
-} > "$mnt_point/etc/apt/sources.list"
+    echo '[network]';
+    echo 'nameserver 8.8.8.8';
+} > "$mnt_point/etc/resolv.conf"

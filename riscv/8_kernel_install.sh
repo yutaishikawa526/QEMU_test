@@ -16,8 +16,7 @@ is_file "$_DISK_PATH"
 loopback=`set_device "$_DISK_PATH"`
 
 # rootパーティションのデバイスを取得
-root_partid=`name_to_partid "$_DISK_PATH" 'root'`
-root_dev=`sudo findfs PARTUUID="$root_partid"`
+root_dev=`name_to_devname "$loopback" 'root'`
 
 # マウント
 tmp_mnt="$_DIR/disk/tmp_mnt"
@@ -49,4 +48,5 @@ sudo qemu-system-riscv64 \
     -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
     -device virtio-blk-device,drive=hd1 \
     -netdev user,id=net0 -device virtio-net-device,netdev=net0 \
+    -device virtio-rng-pci \
     -nographic

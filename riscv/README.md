@@ -61,6 +61,12 @@
 - Ubuntuはriscv用のパッケージがないため、debootstrapその他でのインストールができない
     - ただし公式サイトがUbuntuをインストール済みの[イメージファイルを配布](https://ubuntu.com/download/risc-v)している
     - Ubuntuにriscv用の[パッケージ](http://ports.ubuntu.com/ubuntu-ports/dists/jammy/)があるらしい
+- `-device virtio-rng-pci`がないとdebootstrapでランダムな値ではない?等表示されるため付けておく
+    - KVMの場合は必要ないっぽい(自動で紐づく?)
+- `-device virtio-blk-device`について、ホストPCとゲストPCのアーキテクチャが違う場合はつける
+- `-netdev user,id=net0 -device virtio-net-device,netdev=net0`でインターネットデバイスを紐付ける
+    - ないとネットにアクセスできない
+    - KVMの場合は必要ないっぽい(自動で紐づく?)
 
 ## 参考サイト
 - [32bit RISC-V Linuxを作りQEMUで実行する](https://blog.rogiken.org/blog/2023/04/06/32bit-risc-v-linux%E3%82%92%E4%BD%9C%E3%82%8Aqemu%E3%81%A7%E5%AE%9F%E8%A1%8C%E3%81%99%E3%82%8B/)
