@@ -1,0 +1,13 @@
+
+# 「/etc/apt/sources.list」に設定するファイルのサンプル
+# このファイルを修正し、同じディレクトリに「conf_debootstrap.sh」として保存する
+# 未作成の場合はこのファイルが使用される
+
+deb http://deb.debian.org/debian/ sid main
+deb http://deb.debian.org/debian/ unstable main
+deb http://deb.debian.org/debian/ experimental main
+
+# ubuntuのサンプル
+#deb http://ports.ubuntu.com/ubuntu-ports/ jammy main
+#deb http://ports.ubuntu.com/ubuntu-ports/ jammy-security main
+#deb http://ports.ubuntu.com/ubuntu-ports/ jammy-updates main

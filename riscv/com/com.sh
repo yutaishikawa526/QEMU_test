@@ -16,18 +16,25 @@ function export_env(){
         exit 1
     fi
 
-    _LINUX_SRC="$top_dir/clone/linux"
-    _BUSYBOX_SRC="$top_dir/clone/busyBox"
-    _OPENSBI_SRC="$top_dir/clone/opensbi"
-    _UBOOT_SRC="$top_dir/clone/uboot"
+    # 設定ファイルの読み込み
+    source "$top_dir/conf/conf-sample.sh"
+    if [[ -e "$top_dir/conf/conf.sh" ]]; then
+        source "$top_dir/conf/conf.sh"
+    fi
 
-    _KERNEL_PATH="$top_dir/disk/kernelImage"
-    _BUSYBOX_PATH="$top_dir/disk/busybox"
-    _OPENSBI_PATH="$top_dir/disk/opensbi"
-    _OPENSBI_UBOOT_PATH="$top_dir/disk/opensbi_uboot"
+    # debootrapの設定ファイルの読み込み
+    source "$top_dir/conf/conf_debootstrap-sample.sh"
+    if [[ -e "$top_dir/conf/conf_debootstrap.sh" ]]; then
+        source "$top_dir/conf/conf_debootstrap.sh"
+    fi
 
-    _INIT_DISK_PATH="$top_dir/disk/init_disk.raw"
-    _DISK_PATH="$top_dir/disk/img.raw"
+    # apt sources listの読み込み
+    if [[ -e "$top_dir/conf/conf_apt_sources_list" ]]; then
+        apt_list_path="$top_dir/conf/conf_apt_sources_list"
+    else
+        apt_list_path="$top_dir/conf/conf_apt_sources_list-sample"
+    fi
+    _DEBSTRAP_APT_SOURCE=`cat "$apt_list_path"`
 
     export _LINUX_SRC
     export _BUSYBOX_SRC
@@ -42,18 +49,24 @@ function export_env(){
     export _INIT_DISK_PATH
     export _DISK_PATH
 
-    # 設定ファイルの読み込み
-    if [[ -e "$top_dir/conf/conf.sh" ]]; then
-        source "$top_dir/conf/conf.sh"
-    else
-        source "$top_dir/conf/conf-sample.sh"
-    fi
-
     export _QEMU_MEMORY
+    export _QEMU_SMP
+
     export _DISK_TOTAL_SIZE
     export _DISK_ROOT_SIZE
     export _DISK_BOOT_SIZE
     export _DISK_SWAP_SIZE
+
+    export _KERNEL_IMG_PKG
+    export _KERNEL_HEADERS_PKG
+    export _INITRAMFS_PKG
+
+    export _DEBSTRAP_KEYRING
+    export _DEBSTRAP_INCLUDE
+    export _DEBSTRAP_SUITE
+    export _DEBSTRAP_URL
+
+    export _DEBSTRAP_APT_SOURCE
 }
 
 # 関数が定義済みか確認
@@ -160,9 +173,8 @@ function set_partion(){
 
 }
 
-# ディスクとパーティションラベルからpartuuidを取得する
-# ない場合は'no'を返す
-function name_to_partid(){
+# ディスクとパーティションラベルからデバイス名を取得する
+function name_to_devname(){
     disk=$1
     name=$2
     num=`sudo gdisk -l "$disk" | grep -E '^ +[1-9][0-9]* +.* +'$name'$' | sed -r 's#^ +([1-9][0-9]*) +.* +'$name'$#\1#g' | head -n 1`
@@ -175,7 +187,9 @@ function name_to_partid(){
         echo 'no'
         exit
     fi
-    echo "$partid_large" | tr '[:upper:]' '[:lower:]'
+    partid_large=`echo "$partid_large" | tr '[:upper:]' '[:lower:]'`
+
+    sudo findfs PARTUUID="$partid_large"
 }
 
 # フォーマットを行う
@@ -183,38 +197,15 @@ function name_to_partid(){
 function set_format(){
     disk=$1
 
-    boot_partid=`name_to_partid "$disk" 'boot'`
-    root_partid=`name_to_partid "$disk" 'root'`
-    swap_partid=`name_to_partid "$disk" 'swap'`
+    boot_dev=`name_to_devname "$disk" 'boot'`
+    root_dev=`name_to_devname "$disk" 'root'`
+    swap_dev=`name_to_devname "$disk" 'swap'`
 
-    sudo mkfs.ext4 `sudo findfs PARTUUID="$boot_partid"`
-    sudo mkfs.ext4 `sudo findfs PARTUUID="$root_partid"`
-    if [[ $swap_partid != 'no' ]]; then
-        sudo mkswap `sudo findfs PARTUUID="$swap_partid"`
+    sudo mkfs.ext4 "$boot_dev"
+    sudo mkfs.ext4 "$root_dev"
+    if [[ $swap_dev != 'no' ]]; then
+        sudo mkswap "$swap_dev"
     fi
-}
-
-# メインディスクをマウントする
-# ただし、sys,proc,devはマウントしない(chrootできない)
-# $1:ディスクパス
-# $2:ルートマウントポイント
-function mount_main_disk(){
-    disk=$1
-    mnt_point=$2
-
-    # パーティションIDの取得
-    boot_partid=`name_to_partid "$disk" 'boot'`
-    root_partid=`name_to_partid "$disk" 'root'`
-
-    # パーティション毎のデバイスを取得
-    boot_dev=`sudo findfs PARTUUID="$boot_partid"`
-    root_dev=`sudo findfs PARTUUID="$root_partid"`
-
-    # マウント(sys,proc,devは除外)
-    sudo mkdir -p "$mnt_point"
-    sudo mount -t ext4 "$root_dev" "$mnt_point"
-    sudo mkdir -p "$mnt_point/boot"
-    sudo mount -t ext4 "$boot_dev" "$mnt_point/boot"
 }
 
 # デバイスからUUIDを取得する

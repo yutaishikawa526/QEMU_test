@@ -13,7 +13,7 @@ is_file "$_DISK_PATH"
 
 # 起動
 sudo qemu-system-riscv64 \
-    -machine virt -m "$_QEMU_MEMORY" \
+    -machine virt -m "$_QEMU_MEMORY" -smp "$_QEMU_SMP" \
     -kernel "$_KERNEL_PATH" \
     -bios "$_OPENSBI_PATH" \
     -append "root=/dev/vda rw console=ttyS0 init=/init" \
@@ -22,4 +22,5 @@ sudo qemu-system-riscv64 \
     -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
     -device virtio-blk-device,drive=hd1 \
     -netdev user,id=net0 -device virtio-net-device,netdev=net0 \
+    -device virtio-rng-pci \
     -nographic
