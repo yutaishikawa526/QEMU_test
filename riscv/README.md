@@ -27,32 +27,34 @@
 
 ## 手順
 1. [設定ファイルのサンプル](./conf/conf-sample.sh)を参考に同ディレクトリに`conf.sh`ファイルを作成
-2. [0_initialize.sh](./0_initialize.sh)を実行
-3. [1_kernel_compile.sh](./1_kernel_compile.sh)を実行
+2. [debootstrap設定ファイルのサンプル](./conf/conf_debootstrap-sample.sh)を参考に同ディレクトリに`conf_debootstrap.sh`ファイルを作成
+3. [aptのsourcesリストのサンプル](./conf/conf_apt_sources_list-sample)を参考に同ディレクトリに`conf_apt_sources_list.sh`ファイルを作成
+4. [0_initialize.sh](./0_initialize.sh)を実行
+5. [1_kernel_compile.sh](./1_kernel_compile.sh)を実行
     - 途中でコンパイル設定の画面が表示される
     - 特に変更しなくても実行可能
-4. [2_busybox_compile.sh](./2_busybox_compile.sh)を実行
+6. [2_busybox_compile.sh](./2_busybox_compile.sh)を実行
     - 途中でコンパイル設定の画面が表示されるが、`Settings` -> `Build options` にある `Build static binary` を`yes`にする
-5. [3_opensbi_compile.sh](./3_opensbi_compile.sh)を実行
-6. [4_create_maindisk.sh](./4_create_maindisk.sh)を実行
-7. [5_setup_maindisk.sh](./5_setup_maindisk.sh)を実行
-8. [6_create_initdisk.sh](./6_create_initdisk.sh)を実行
-9. [7_exec_debootstrap.sh](./7_exec_debootstrap.sh)を実行
+7. [3_opensbi_compile.sh](./3_opensbi_compile.sh)を実行
+8. [4_create_maindisk.sh](./4_create_maindisk.sh)を実行
+9. [5_setup_maindisk.sh](./5_setup_maindisk.sh)を実行
+10. [6_create_initdisk.sh](./6_create_initdisk.sh)を実行
+11. [7_exec_debootstrap.sh](./7_exec_debootstrap.sh)を実行
     - 実行後、ゲストPCでlinuxが起動し、serial接続の画面が表示される
     - 画面上に`exec command '/home/x1_debootstrap.sh'`と表示されたら、`/home/x1_debootstrap.sh`を実行する
     - 途中でroot権限のパスワードを求められるため入力する
     - 完了後、`poweroff -f`を実行して終了する
-10. [8_kernel_install.sh](./8_kernel_install.sh)を実行
+12. [8_kernel_install.sh](./8_kernel_install.sh)を実行
     - 実行後、serial接続の画面が表示される
     - root権限でログインする
     - rootのホームディレクトリに`2x_kernel_install.sh`が設置されているため、実行する
     - 途中で日付と言語の設定画面が表示されるため設定する
     - 完了後、`shutdown -h now`を実行して終了する
-11. 完了
+13. 完了
     - 以降は[9_exe.sh](./9_exe.sh)で実行可能
     - 起動の初期段階で起動するカーネルを選択する画面が表示されるため選択する
     - 終了は`shutdown -h now`で行う
-12. 途中で失敗した場合
+14. 途中で失敗した場合
     - [10_clear.sh](./10_clear.sh)を実行することでマウント状態やループバックデバイスを閉じることができる
     - `sudo ps -av`で実行中のタスクを確認して`kill`することを検討する
     - エラーの内容によっては途中からのやりなしも検討

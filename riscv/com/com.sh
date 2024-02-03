@@ -22,6 +22,20 @@ function export_env(){
         source "$top_dir/conf/conf.sh"
     fi
 
+    # debootrapの設定ファイルの読み込み
+    source "$top_dir/conf/conf_debootstrap-sample.sh"
+    if [[ -e "$top_dir/conf/conf_debootstrap.sh" ]]; then
+        source "$top_dir/conf/conf_debootstrap.sh"
+    fi
+
+    # apt sources listの読み込み
+    if [[ -e "$top_dir/conf/conf_apt_sources_list" ]]; then
+        apt_list_path="$top_dir/conf/conf_apt_sources_list"
+    else
+        apt_list_path="$top_dir/conf/conf_apt_sources_list-sample"
+    fi
+    _DEBSTRAP_APT_SOURCE=`cat "$apt_list_path"`
+
     export _LINUX_SRC
     export _BUSYBOX_SRC
     export _OPENSBI_SRC
@@ -36,10 +50,19 @@ function export_env(){
     export _DISK_PATH
 
     export _QEMU_MEMORY
+    export _QEMU_SMP
+
     export _DISK_TOTAL_SIZE
     export _DISK_ROOT_SIZE
     export _DISK_BOOT_SIZE
     export _DISK_SWAP_SIZE
+
+    export _DEBSTRAP_KEYRING
+    export _DEBSTRAP_INCLUDE
+    export _DEBSTRAP_SUITE
+    export _DEBSTRAP_URL
+
+    export _DEBSTRAP_APT_SOURCE
 }
 
 # 関数が定義済みか確認
