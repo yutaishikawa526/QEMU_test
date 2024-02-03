@@ -2,6 +2,7 @@
 
 ## 説明
 - qemu上でdebianを動かす
+- 設定ファイルを適切に設定することでUbuntuの起動可能
 - インストールはdebootstrapを使用する
 - 最終的には「openSBI + U-boot」で起動可能なイメージファイルを作成するのが目的
 - 最終的な成果物について
@@ -50,6 +51,8 @@
     - rootのホームディレクトリに`2x_kernel_install.sh`が設置されているため、実行する
     - 途中で日付と言語の設定画面が表示されるため設定する
     - 完了後、`shutdown -h now`を実行して終了する
+    - 注意点として`u-boot-menu`パッケージをインストールしてUbootの設定をしているが、このパッケージがないミラーサイトの場合は建て替え手段を用意する必要がる
+    - 同様に`tzdata`と`locales`による`dpkg-reconfigure tzdata`と`dpkg-reconfigure locales`が実行できない場合は`2x_kernel_install.sh`を修正してから実行する
 13. 完了
     - 以降は[9_exe.sh](./9_exe.sh)で実行可能
     - 起動の初期段階で起動するカーネルを選択する画面が表示されるため選択する
@@ -63,12 +66,14 @@
 - Ubuntuはriscv用のパッケージがないため、debootstrapその他でのインストールができない
     - ただし公式サイトがUbuntuをインストール済みの[イメージファイルを配布](https://ubuntu.com/download/risc-v)している
     - Ubuntuにriscv用の[パッケージ](http://ports.ubuntu.com/ubuntu-ports/dists/jammy/)があるらしい
+    - [debootstrapの設定ファイル](./conf/conf_debootstrap-sample.sh)と[/etc/apt/sources.listの設定ファイル](./conf/conf_apt_sources_list-sample)にUbuntuの場合のサンプルを追記
 - `-device virtio-rng-pci`がないとdebootstrapでランダムな値ではない?等表示されるため付けておく
     - KVMの場合は必要ないっぽい(自動で紐づく?)
 - `-device virtio-blk-device`について、ホストPCとゲストPCのアーキテクチャが違う場合はつける
 - `-netdev user,id=net0 -device virtio-net-device,netdev=net0`でインターネットデバイスを紐付ける
     - ないとネットにアクセスできない
     - KVMの場合は必要ないっぽい(自動で紐づく?)
+- EFI&GRUBによる起動もできるようにしたいけど、efiパーティションの追加が必要だからどうするか…
 
 ## 参考サイト
 - [32bit RISC-V Linuxを作りQEMUで実行する](https://blog.rogiken.org/blog/2023/04/06/32bit-risc-v-linux%E3%82%92%E4%BD%9C%E3%82%8Aqemu%E3%81%A7%E5%AE%9F%E8%A1%8C%E3%81%99%E3%82%8B/)

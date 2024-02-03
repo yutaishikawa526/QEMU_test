@@ -51,3 +51,15 @@ _DISK_BOOT_SIZE='4G'
 # 「4G」「500M」で指定(例は2GB)
 # 未入力の場合は作成しない
 _DISK_SWAP_SIZE='2G'
+
+# インストールするカーネルイメージ
+_KERNEL_IMG_PKG='linux-image-riscv64'
+# インストールするカーネルヘッダー
+_KERNEL_HEADERS_PKG='linux-headers-riscv64'
+# インストールするinitramfs
+_INITRAMFS_PKG='initramfs-tools'
+## Ubuntuのサンプル
+## [6_kernel_install.sh]の中でdebootstrap後に[chroot /mnt apt install linux-{image,headers}]を実行すると適当なものを教えてくれる
+#_KERNEL_IMG_PKG='linux-image-5.15.0-1028-generic'
+#_KERNEL_HEADERS_PKG='linux-headers-5.15.0-1028-generic'
+#_INITRAMFS_PKG='initramfs-tools'

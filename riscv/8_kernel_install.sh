@@ -23,8 +23,15 @@ tmp_mnt="$_DIR/disk/tmp_mnt"
 mkdir -p "$tmp_mnt"
 sudo mount "$root_dev" "$tmp_mnt"
 
-sudo cp "$_DIR/x2_kernel_install.sh" "$tmp_mnt/root/x2_kernel_install.sh"
-sudo chmod +x "$tmp_mnt/root/x2_kernel_install.sh"
+kenel_inst_sh="$tmp_mnt/root/x2_kernel_install.sh"
+
+sudo cp "$_DIR/x2_kernel_install.sh" "$kenel_inst_sh"
+sudo chmod +x "$kenel_inst_sh"
+
+# カーネルインストールのshの設定
+sudo sed -i -E 's#^(linux_img_pkg)=.*$#\1='$_KERNEL_IMG_PKG'#g' "$kenel_inst_sh"
+sudo sed -i -E 's#^(linux_headers_pkg)=.*$#\1='$_KERNEL_HEADERS_PKG'#g' "$kenel_inst_sh"
+sudo sed -i -E 's#^(initramfs_pkg)=.*$#\1='$_INITRAMFS_PKG'#g' "$kenel_inst_sh"
 
 sleep 3
 
