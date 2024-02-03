@@ -7,7 +7,7 @@ source "$_DIR/com/com.sh"
 export_env "$_DIR"
 
 sudo qemu-system-riscv64 \
-    -machine virt -m "$_QEMU_MEMORY" \
+    -machine virt -m "$_QEMU_MEMORY" -smp "$_QEMU_SMP" \
     -bios "$_OPENSBI_UBOOT_PATH" \
     -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
     -device virtio-blk-device,drive=hd1 \
