@@ -66,7 +66,7 @@
 - Ubuntuはriscv用のパッケージがないため、debootstrapその他でのインストールができない
     - ただし公式サイトがUbuntuをインストール済みの[イメージファイルを配布](https://ubuntu.com/download/risc-v)している
     - Ubuntuにriscv用の[パッケージ](http://ports.ubuntu.com/ubuntu-ports/dists/jammy/)があるらしい
-    - [debootstrapの設定ファイル](./conf/conf_debootstrap-sample.sh)と[/etc/apt/sources.listの設定ファイル](./conf/conf_apt_sources_list-sample)にUbuntuの場合のサンプルを追記
+    - [debootstrapの設定ファイル](./conf/conf_debootstrap-sample.sh)と[/etc/apt/sources.listの設定ファイル](./conf/conf_apt_sources_list-sample)と[設定ファイル](./conf/conf-sample.sh)にUbuntuの場合のサンプルを追記
 - `-device virtio-rng-pci`がないとdebootstrapでランダムな値ではない?等表示されるため付けておく
     - KVMの場合は必要ないっぽい(自動で紐づく?)
 - `-device virtio-blk-device`について、ホストPCとゲストPCのアーキテクチャが違う場合はつける
