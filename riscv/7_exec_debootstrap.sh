@@ -22,4 +22,5 @@ sudo qemu-system-riscv64 \
     -drive file="$_DISK_PATH",format=raw,media=disk,id=hd1 \
     -device virtio-blk-device,drive=hd1 \
     -netdev user,id=net0 -device virtio-net-device,netdev=net0 \
+    -device virtio-rng-pci \
     -nographic

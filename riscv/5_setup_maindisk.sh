@@ -16,12 +16,22 @@ set_format "$loopback"
 
 sleep 3
 
+# パーティション毎のデバイスを取得
+boot_dev=`name_to_devname "$loopback" 'boot'`
+root_dev=`name_to_devname "$loopback" 'root'`
+swap_dev=`name_to_devname "$loopback" 'swap'`
+
 # マウント
 tmp_mnt="$_DIR/disk/tmp_mnt_main"
-sudo rm -R "$tmp_mnt" || true;mkdir -p "$tmp_mnt"
-mount_main_disk "$loopback" "$_DIR/disk/tmp_mnt_main"
+sudo rm -R "$tmp_mnt" || true
+mkdir -p "$tmp_mnt"
 
-# ディスクの準備
+sudo mkdir -p "$tmp_mnt"
+sudo mount -t ext4 "$root_dev" "$tmp_mnt"
+sudo mkdir -p "$tmp_mnt/boot"
+sudo mount -t ext4 "$boot_dev" "$tmp_mnt/boot"
+
+# debootstrap first stage
 sudo debootstrap \
     --arch riscv64 --foreign \
     --keyring /usr/share/keyrings/debian-archive-keyring.gpg \
@@ -29,19 +39,12 @@ sudo debootstrap \
     sid "$tmp_mnt" \
     'http://deb.debian.org/debian/'
 
-# テスト
-#[Invalid Release file, no entry for main/binary-riscv64/Packages]
-#sudo ./disk/x2_umount.sh /home/yutaishikawa/work/QEMU_test/riscv/disk/tmp_mnt
-#tmp_path='/home/yutaishikawa/work/QEMU_test/riscv/disk/test_deboot';mkdir -p "$tmp_path";sudo rm -R "$tmp_path";mkdir -p "$tmp_path"
-#sudo debootstrap --arch riscv64 --foreign \
-#    --keyring /usr/share/keyrings/debian-ports-archive-keyring.gpg \
-#    --include=debian-ports-archive-keyring sid \
-#    "$tmp_path" http://deb.debian.org/debian-ports
-#tmp_path='/home/yutaishikawa/work/QEMU_test/riscv/disk/test_deboot';mkdir -p "$tmp_path";sudo rm -R "$tmp_path";mkdir -p "$tmp_path"
-#sudo debootstrap \
-#    --arch riscv64 --foreign \
-#    jammy \
-#    "$tmp_path" http://de.archive.ubuntu.com/ubuntu
+# aptのミラーサイトを設定
+{
+    echo 'deb http://deb.debian.org/debian/ sid main'
+    echo 'deb http://deb.debian.org/debian/ unstable main'
+    echo 'deb http://deb.debian.org/debian/ experimental main'
+} | sudo sh -c "cat > $tmp_mnt/etc/apt/sources.list"
 
 sleep 3
 

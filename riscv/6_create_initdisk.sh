@@ -42,31 +42,24 @@ sudo chmod +x "$deb_sh"
 # ループバックデバイス設定
 loopback=`set_device "$_DISK_PATH"`
 
-# パーティションIDの取得
-boot_partid=`name_to_partid "$loopback" 'boot'`
-root_partid=`name_to_partid "$loopback" 'root'`
-swap_partid=`name_to_partid "$loopback" 'swap'`
-
 # パーティション毎のデバイスを取得
-boot_dev=`sudo findfs PARTUUID="$boot_partid"`
-root_dev=`sudo findfs PARTUUID="$root_partid"`
-swap_dev=
-if [[ "$swap_partid" != 'no' ]]; then
-    swap_dev=`sudo findfs PARTUUID="$swap_partid"`
-fi
+boot_dev=`name_to_devname "$loopback" 'boot'`
+root_dev=`name_to_devname "$loopback" 'root'`
+swap_dev=`name_to_devname "$loopback" 'swap'`
 
 # パーティションのUUIDを取得
 boot_uuid=`get_uuid_by_device "$boot_dev"`
 root_uuid=`get_uuid_by_device "$root_dev"`
 swap_uuid=
-if [[ "$swap_partid" != 'no' ]]; then
+if [[ $swap_dev != 'no' ]]; then
     swap_uuid=`get_uuid_by_device "$swap_dev"`
 fi
 
 # uuid情報書き込み
 sudo sed -i -E 's#^(boot_uuid)=.*$#\1='$boot_uuid'#g' "$deb_sh"
 sudo sed -i -E 's#^(root_uuid)=.*$#\1='$root_uuid'#g' "$deb_sh"
-if [[ "$swap_partid" != 'no' ]]; then
+if [[ $swap_dev != 'no' ]]; then
+    swap_uuid=`get_uuid_by_device "$swap_dev"`
     sudo sed -i -E 's#^(swap_uuid)=.*$#\1='$swap_uuid'#g' "$deb_sh"
 fi
 
