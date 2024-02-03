@@ -31,6 +31,8 @@ _DISK_PATH="$top_dir/disk/img.raw"
 
 # qemuで使用するメモリサイズ(MD)
 _QEMU_MEMORY=2048
+# qemuで使用するcpuの数
+_QEMU_SMP=1
 
 # メインイメージのサイズ
 # 「512MB * $_DISK_TOTAL_SIZE」で計算する

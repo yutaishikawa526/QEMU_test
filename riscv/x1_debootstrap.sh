@@ -56,7 +56,7 @@ echo '--------- set fstab ---------'
         echo '# swap'
         echo "UUID=$swap_uuid none swap defaults 0 0"
     fi
-} | sudo sh -c "cat > $tmp_mnt/etc/fstab"
+} > "$mnt_point/etc/fstab"
 
 echo '--------- set resolv.conf ---------'
 

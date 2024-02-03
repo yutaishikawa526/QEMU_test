@@ -13,7 +13,7 @@ is_file "$_DISK_PATH"
 
 # 起動
 sudo qemu-system-riscv64 \
-    -machine virt -m "$_QEMU_MEMORY" \
+    -machine virt -m "$_QEMU_MEMORY" -smp "$_QEMU_SMP" \
     -kernel "$_KERNEL_PATH" \
     -bios "$_OPENSBI_PATH" \
     -append "root=/dev/vda rw console=ttyS0 init=/init" \
