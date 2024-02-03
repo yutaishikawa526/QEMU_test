@@ -16,7 +16,8 @@
     - riscv上に「openSBI + U-boot」をbiosとし、debianをインストールしたディスクイメージを起動
     - debianのインストールはdebootstrapを使用する
     - preinstalledイメージを使用しない
-    - ubuntuのriscv用のリポジトリが用意されたらubuntuでも可能と思われる
+    - ubuntuのriscv用のミラーサイトが用意されたらubuntuでも可能と思われる
+        - ubuntuのミラーサイトが見つかったのでubuntu用に対応した
 - [riscv_preinstalled](./riscv_preinstalled/)
     - preinstalledイメージを使用してriscv上でubuntuの起動
 - [work_dir](./work_dir/) : 作業用のディレクトリ
