@@ -57,6 +57,10 @@ function export_env(){
     export _DISK_BOOT_SIZE
     export _DISK_SWAP_SIZE
 
+    export _KERNEL_IMG_PKG
+    export _KERNEL_HEADERS_PKG
+    export _INITRAMFS_PKG
+
     export _DEBSTRAP_KEYRING
     export _DEBSTRAP_INCLUDE
     export _DEBSTRAP_SUITE

@@ -20,3 +20,9 @@ _DEBSTRAP_SUITE='sid'
 
 # debootstrapする対象のミラーサイト
 _DEBSTRAP_URL='http://deb.debian.org/debian/'
+
+##ubuntuのサンプル
+#_DEBSTRAP_KEYRING='/usr/share/keyrings/ubuntu-archive-keyring.gpg'
+#_DEBSTRAP_INCLUDE='ubuntu-keyring,curl,vim'
+#_DEBSTRAP_SUITE='jammy'
+#_DEBSTRAP_URL='http://ports.ubuntu.com/ubuntu-ports/'

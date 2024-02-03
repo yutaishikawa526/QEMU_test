@@ -6,3 +6,8 @@
 deb http://deb.debian.org/debian/ sid main
 deb http://deb.debian.org/debian/ unstable main
 deb http://deb.debian.org/debian/ experimental main
+
+# ubuntuのサンプル
+#deb http://ports.ubuntu.com/ubuntu-ports/ jammy main
+#deb http://ports.ubuntu.com/ubuntu-ports/ jammy-security main
+#deb http://ports.ubuntu.com/ubuntu-ports/ jammy-updates main

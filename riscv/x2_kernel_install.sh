@@ -3,6 +3,10 @@
 # カーネルその他のインストール
 # riscv上で実行される
 
+linux_img_pkg=
+linux_headers_pkg=
+initramfs_pkg=
+
 # ネットワーク設定
 systemctl enable systemd-networkd
 {
@@ -19,7 +23,7 @@ systemctl restart systemd-networkd
 apt update -y
 
 # カーネルインストール
-apt install -y linux-{image,headers}-riscv64 initramfs-tools
+apt install -y "$linux_img_pkg" "$linux_headers_pkg" "$initramfs_pkg"
 
 # !!!注:キーボード設定[keyboard-configuration]はqemuでキーボードを適切に渡す必要がある
 

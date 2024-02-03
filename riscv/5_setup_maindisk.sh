@@ -42,7 +42,7 @@ fi
 
 sudo debootstrap \
     --arch riscv64 --foreign \
-    "$keyring" \
+    $keyring \
     --include="$_DEBSTRAP_INCLUDE" \
     "$_DEBSTRAP_SUITE" "$tmp_mnt" \
     "$_DEBSTRAP_URL"
