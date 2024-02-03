@@ -1,3 +1,5 @@
 /*
 !/.gitignore
 !/conf-sample.sh
+!/conf_debootstrap-sample.sh
+!/conf_apt_sources_list-sample
