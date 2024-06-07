@@ -14,7 +14,7 @@ sudo apt install -y git qemu-kvm qemu-utils
 
 # 必要なリポジトリのダウンロード
 sudo rm -R "$_CLONE_DIR" || true
-git clone https://github.com/yutaishikawa526/UbuntuSettings "$_CLONE_DIR"
+git clone https://github.com/yutaishikawa526/Ubuntu_install "$_CLONE_DIR"
 sudo rm -R "$_CLONE_DIR/.git"
 
 sudo mkdir -p "$_DIR/disk/mnt"
