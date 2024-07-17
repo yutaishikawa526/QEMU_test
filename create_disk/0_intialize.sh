@@ -4,7 +4,7 @@
 
 _DIR=$(cd $(dirname $0) ; pwd)
 _CLONE_DIR="$_DIR/clone/UbuntuSettings"
-_CREATE_DIR="$_CLONE_DIR/sh/install_ubuntu"
+_CREATE_DIR="$_CLONE_DIR"
 
 sudo apt update
 sudo apt install -y git qemu-kvm qemu-utils
@@ -31,6 +31,12 @@ sudo mkdir -p "$_DIR/disk/mnt"
     echo '_KERNEL_OTHER_INSTALL='
     echo "_GRUB_TARGET='i386-pc'"
     echo '_GRUB_EFI_PACKAGE="grub-pc grub-pc-bin"'
+    echo '_APT_SOURCE_LIST=$(cat << EOF'
+    echo 'deb http://de.archive.ubuntu.com/ubuntu jammy           main restricted universe'
+    echo 'deb http://de.archive.ubuntu.com/ubuntu jammy-security  main restricted universe'
+    echo 'deb http://de.archive.ubuntu.com/ubuntu jammy-updates   main restricted universe'
+    echo 'EOF'
+    echo ')'
 } | sudo sh -c "cat > $_CREATE_DIR/conf/conf.sh"
 
 {

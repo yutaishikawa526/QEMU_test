@@ -4,7 +4,7 @@
 
 _DIR=$(cd $(dirname $0) ; pwd)
 _CLONE_DIR="$_DIR/clone/UbuntuSettings"
-_CREATE_DIR="$_CLONE_DIR/sh/install_ubuntu"
+_CREATE_DIR="$_CLONE_DIR"
 
 # ------------- ディスクの作成 -------------
 
